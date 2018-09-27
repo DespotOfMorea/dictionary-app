@@ -15,7 +15,7 @@ public class App {
         ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);
         context.setContextPath("/");
 
-        Server jettyServer = new Server(2225);
+        Server jettyServer = new Server(2222);
         jettyServer.setHandler(context);
 
         ServletHolder jerseyServlet = context.addServlet(
