@@ -12,7 +12,6 @@ public class DBMethods {
     static Connection connection = null;
     static PreparedStatement statement = null;
     static ResultSet resultSet = null;
-    private static java.sql.Connection con = null;
     private static String dbPath = "jdbc:mysql://localhost/";
     private static String dbName = "geodictionary";
     private static String tableLanguages = "languages";
