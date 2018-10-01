@@ -5,14 +5,23 @@ import com.gzs.model.Term;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 
-@Path("/dictionary")
-public class EntryPoint {
+@Path("/api")
+public class RestMethods {
 
-    @POST
-    @Path("post")
+    public RestMethods() {}
+
+    @GET
+    @Path("/tst")
+    @Produces(MediaType.TEXT_PLAIN)
+    public String create() {
+        return "test success";
+    }
+
+    @GET
+    @Path("/post")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces(MediaType.TEXT_HTML)
-    public String postMethod(@FormParam("term") String termName) {
+    public String getTerm(@FormParam("term") String termName) {
 
         int term1ID = DBMethods.getTermID(termName);
         if (term1ID != 0) {
@@ -29,4 +38,5 @@ public class EntryPoint {
             return "<h2>Hello, there is no term " + termName + " in dictionary.</h2>";
         }
     }
+
 }
