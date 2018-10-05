@@ -103,6 +103,27 @@ public class DBMethods {
         }
     }
 
+    public static Language getLanguageByID(int id) {
+        Language data = new Language();
+        testConn();
+        try {
+            createConn();
+            statement = connection.prepareStatement("SELECT * FROM " + tableLanguages + " WHERE id = ?");
+            statement.setInt(1, id);
+            resultSet = statement.executeQuery();
+            resultSet.next();
+                String englishName = resultSet.getString("EnglishName");
+                String nativeName = resultSet.getString("NativeName");
+                String isoCode = resultSet.getString("IsoCode");
+                data = new Language(id, englishName, nativeName, isoCode);
+        } catch (SQLException sqlex) {
+            sqlex.printStackTrace();
+        } finally {
+            endConn(connection, resultSet, statement);
+        }
+        return data;
+    }
+
     public static void addTerm(Term term) {
         testConn();
         try {
@@ -112,7 +133,7 @@ public class DBMethods {
             statement.setInt(i++, term.getId());
             statement.setString(i++, term.getTerm());
             statement.setString(i++, term.getMeaning());
-            statement.setInt(i++, term.getLanguageID());
+            statement.setInt(i++, term.getLanguage().getId());
 
             statement.executeUpdate();
         } catch (SQLException ex) {
@@ -129,8 +150,8 @@ public class DBMethods {
             statement = connection.prepareStatement("insert into " + tableTranslations + " values(?,?,?,?)");
             int i = 1;
             statement.setInt(i++, translation.getId());
-            statement.setInt(i++, translation.getTerm1ID());
-            statement.setInt(i++, translation.getTerm2ID());
+            statement.setInt(i++, translation.getTerm1ID().getId());
+            statement.setInt(i++, translation.getTerm2ID().getId());
             statement.setInt(i++, translation.getPriority());
 
             statement.executeUpdate();
@@ -146,7 +167,8 @@ public class DBMethods {
         testConn();
         try {
             createConn();
-            statement = connection.prepareStatement("SELECT * FROM " + tableTerms + " WHERE term = '" + term + "'");
+            statement = connection.prepareStatement("SELECT * FROM " + tableTerms + " WHERE term = ?");
+            statement.setString(1,term);
             resultSet = statement.executeQuery();
             while (resultSet.next()) {
                 id = resultSet.getInt("ID");
@@ -164,15 +186,14 @@ public class DBMethods {
         testConn();
         try {
             createConn();
-            statement = connection.prepareStatement("SELECT * FROM " + tableTerms + " WHERE id = " + id);
+            statement = connection.prepareStatement("SELECT * FROM " + tableTerms + " WHERE id = ?");
+            statement.setInt(1, id);
             resultSet = statement.executeQuery();
-            while (resultSet.next()) {
-                String term = resultSet.getString("Term");
-                String meaning = resultSet.getString("Meaning");
-                int languageID = resultSet.getInt("LanguageID");
-
-                data = new Term(id, term, meaning, languageID);
-            }
+            resultSet.next();
+            String term = resultSet.getString("Term");
+            String meaning = resultSet.getString("Meaning");
+            int languageID = resultSet.getInt("LanguageID");
+            data = new Term(id, term, meaning, languageID);
         } catch (SQLException sqlex) {
             sqlex.printStackTrace();
         } finally {
@@ -186,10 +207,13 @@ public class DBMethods {
         testConn();
         try {
             createConn();
-            statement = connection.prepareStatement("SELECT * FROM " + tableTranslations + " WHERE term1id = '" + term1ID + "'");
+            statement = connection.prepareStatement("SELECT * FROM " + tableTranslations + " WHERE term1id = ?");
+            statement.setInt(1,term1ID);
             resultSet = statement.executeQuery();
             while (resultSet.next()) {
-                id = resultSet.getInt("Term2ID");
+                if (resultSet.getInt("Priority")==1){
+                    id = resultSet.getInt("Term2ID");
+                }
             }
         } catch (SQLException sqlex) {
             sqlex.printStackTrace();
