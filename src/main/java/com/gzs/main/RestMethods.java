@@ -21,8 +21,7 @@ public class RestMethods {
     @Path("/post")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces(MediaType.TEXT_HTML)
-    public String getTerm(@FormParam("term") String termName) {
-
+    public String getTerm(@QueryParam("term") String termName) {
         int term1ID = DBMethods.getTermID(termName);
         if (term1ID != 0) {
             int term2ID = DBMethods.getTranslatedTermID(term1ID);
