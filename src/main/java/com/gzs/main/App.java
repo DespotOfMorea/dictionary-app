@@ -1,8 +1,5 @@
 package com.gzs.main;
 
-import com.gzs.model.Language;
-import com.gzs.model.Term;
-import com.gzs.model.Translation;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.ServletContextHandler;
