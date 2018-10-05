@@ -4,28 +4,26 @@ import lombok.extern.slf4j.Slf4j;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
+import org.jboss.resteasy.plugins.server.servlet.HttpServletDispatcher;
 
-@Slf4j
 public class App {
+
+    private static final int PORT = 2222;
+    private static final String CONTEXT_ROOT = "/";
+
     public static void main(String[] args) throws Exception {
 //        createDataBase();
 //        generateDBData();
-
+      
         log.info("Starting application");
-        
-        ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);
-        context.setContextPath("/");
+      
+        Server jettyServer = new Server(PORT);
 
-        Server jettyServer = new Server(2222);
-        jettyServer.setHandler(context);
-
-        ServletHolder jerseyServlet = context.addServlet(
-                org.glassfish.jersey.servlet.ServletContainer.class, "/*");
-        jerseyServlet.setInitOrder(0);
-
-        jerseyServlet.setInitParameter(
-                "jersey.config.server.provider.classnames",
-                EntryPoint.class.getCanonicalName());
+        final ServletContextHandler context = new ServletContextHandler(jettyServer, CONTEXT_ROOT);
+        final ServletHolder restEasyServlet = new ServletHolder(new HttpServletDispatcher());
+        restEasyServlet.setInitParameter("javax.ws.rs.Application","com.gzs.main.RestApplication");
+      
+        context.addServlet(restEasyServlet,"/*");
 
         try {
             jettyServer.start();
