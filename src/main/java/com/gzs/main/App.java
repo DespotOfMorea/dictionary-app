@@ -6,6 +6,7 @@ import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.jboss.resteasy.plugins.server.servlet.HttpServletDispatcher;
 
+@Slf4j
 public class App {
 
     private static final int PORT = 2222;
