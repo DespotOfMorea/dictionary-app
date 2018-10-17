@@ -32,7 +32,7 @@ public class RestMethods {
                 ObjectMapper mapper = new ObjectMapper();
                 return mapper.writeValueAsString(term);
             } else {
-                return "<h2>Hello, there is no translation for" + termName + " in dictionary.</h2>";
+                return "<h2>Hello, there is no translation for " + termName + " in dictionary.</h2>";
             }
         } else {
             return "<h2>Hello, there is no term " + termName + " in dictionary.</h2>";
