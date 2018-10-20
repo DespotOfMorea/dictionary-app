@@ -17,9 +17,8 @@ public class TestDBMethods {
         };
     }
 
-//    @Parameters({ "term1", "id1" })
-    @Test (priority = 1, dataProvider="EqualsAssertionsProvider")
-    public void testgetTermID(String st, int num)
+    @Test (dataProvider="EqualsAssertionsProvider")
+    public void testGetTermID(String st, int num)
     {
         Assert.assertEquals(DBMethods.getTermID(st),num);
     }

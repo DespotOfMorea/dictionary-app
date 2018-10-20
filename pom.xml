@@ -15,8 +15,12 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <maven.compiler.source>1.7</maven.compiler.source>
-    <maven.compiler.target>1.7</maven.compiler.target>
+      <java.version>11</java.version>
+      <testng.version>6.14.3</testng.version>
+      <mockito-core.version>2.23.0</mockito-core.version>
+      <powermock.version>2.0.0-beta.5</powermock.version>
+      <maven.compiler.source>${java.version}</maven.compiler.source>
+      <maven.compiler.target>${java.version}</maven.compiler.target>
   </properties>
 
   <dependencies>
@@ -50,13 +54,29 @@
       <dependency>
           <groupId>org.testng</groupId>
           <artifactId>testng</artifactId>
-          <version>6.14.3</version>
+          <version>${testng.version}</version>
           <scope>test</scope>
       </dependency>
+      <!-- Mockito 2 -->
       <dependency>
           <groupId>org.mockito</groupId>
           <artifactId>mockito-core</artifactId>
-          <version>2.23.0</version>
+          <version>${mockito-core.version}</version>
+          <scope>test</scope>
+      </dependency>
+      <!-- PowerMock TestNG Module -->
+      <dependency>
+          <groupId>org.powermock</groupId>
+          <artifactId>powermock-module-testng</artifactId>
+          <version>${powermock.version}</version>
+          <scope>test</scope>
+      </dependency>
+      <!-- PowerMock Mockito2 API -->
+      <dependency>
+          <groupId>org.powermock</groupId>
+          <artifactId>powermock-api-mockito2</artifactId>
+          <version>${powermock.version}</version>
+          <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>com.fasterxml.jackson.core</groupId>
