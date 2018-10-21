@@ -51,34 +51,7 @@
       <version>4.11</version>
       <scope>test</scope>
     </dependency>
-      <dependency>
-          <groupId>org.testng</groupId>
-          <artifactId>testng</artifactId>
-          <version>${testng.version}</version>
-          <scope>test</scope>
-      </dependency>
-      <!-- Mockito 2 -->
-      <dependency>
-          <groupId>org.mockito</groupId>
-          <artifactId>mockito-core</artifactId>
-          <version>${mockito-core.version}</version>
-          <scope>test</scope>
-      </dependency>
-      <!-- PowerMock TestNG Module -->
-      <dependency>
-          <groupId>org.powermock</groupId>
-          <artifactId>powermock-module-testng</artifactId>
-          <version>${powermock.version}</version>
-          <scope>test</scope>
-      </dependency>
-      <!-- PowerMock Mockito2 API -->
-      <dependency>
-          <groupId>org.powermock</groupId>
-          <artifactId>powermock-api-mockito2</artifactId>
-          <version>${powermock.version}</version>
-          <scope>test</scope>
-      </dependency>
-      <dependency>
+    <dependency>
         <groupId>com.fasterxml.jackson.core</groupId>
         <artifactId>jackson-databind</artifactId>
         <version>2.9.6</version>
