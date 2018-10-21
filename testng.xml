@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
+
+<suite name="AllTestsSuite">
+    <test name="Dictionary App Test">
+        <parameter name="term1" value="Pukotina" />
+        <parameter name="term2" value="Cave" />
+        <parameter name="id1" value="17" />
+        <parameter name="id2" value="45" />
+        <parameter name="id3" value="0" />
+        <classes>
+            <class name="TestDBMethods"/>
+        </classes>
+    </test>
+</suite>
