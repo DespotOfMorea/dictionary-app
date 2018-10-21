@@ -19,6 +19,33 @@ public class DBMethods {
     private static String tableTranslations = "translations";
     private static String username = "root";
     private static String password = "";
+    private static PreparedStatement getTermByIDPrpStmt;
+    private static PreparedStatement getTranslatedTermIDPrpStmt;
+    private static PreparedStatement getTermIDPrpStmt;
+
+    static {
+
+        try {
+            createConn();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        try {
+            getTranslatedTermIDPrpStmt = connection.prepareStatement("SELECT * FROM " + tableTranslations + " WHERE term1id = ?");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        try {
+            getTermIDPrpStmt = connection.prepareStatement("SELECT * FROM " + tableTerms + " WHERE term = ?");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        try {
+            getTermByIDPrpStmt = connection.prepareStatement("SELECT * FROM " + tableTerms + " WHERE id = ?");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 
     public static void createDB() {
         try {
@@ -31,9 +58,7 @@ public class DBMethods {
     }
 
     public static void createTableLanguages() {
-        testConn();
         try {
-            createConn();
             Statement st = connection.createStatement();
             int rs = st.executeUpdate("CREATE TABLE IF NOT EXISTS " + tableLanguages + " (" +
                     "ID int NOT NULL AUTO_INCREMENT, " +
@@ -48,9 +73,7 @@ public class DBMethods {
     }
 
     public static void createTableTerms() {
-        testConn();
         try {
-            createConn();
             Statement st = connection.createStatement();
             int rs = st.executeUpdate("CREATE TABLE IF NOT EXISTS " + tableTerms + " (" +
                     "ID int NOT NULL AUTO_INCREMENT, " +
@@ -66,9 +89,7 @@ public class DBMethods {
     }
 
     public static void createTableTranslations() {
-        testConn();
         try {
-            createConn();
             Statement st = connection.createStatement();
             int rs = st.executeUpdate("CREATE TABLE IF NOT EXISTS " + tableTranslations + " (" +
                     "ID int NOT NULL AUTO_INCREMENT, " +
@@ -85,9 +106,7 @@ public class DBMethods {
     }
 
     public static void addLanguage(Language language) {
-        testConn();
         try {
-            createConn();
             statement = connection.prepareStatement("insert into " + tableLanguages + " values(?,?,?,?)");
             int i = 1;
             statement.setInt(i++, language.getId());
@@ -105,9 +124,7 @@ public class DBMethods {
 
     public static Language getLanguageByID(int id) {
         Language data = new Language();
-        testConn();
         try {
-            createConn();
             statement = connection.prepareStatement("SELECT * FROM " + tableLanguages + " WHERE id = ?");
             statement.setInt(1, id);
             resultSet = statement.executeQuery();
@@ -125,9 +142,7 @@ public class DBMethods {
     }
 
     public static void addTerm(Term term) {
-        testConn();
         try {
-            createConn();
             statement = connection.prepareStatement("insert into " + tableTerms + " values(?,?,?,?)");
             int i = 1;
             statement.setInt(i++, term.getId());
@@ -144,9 +159,7 @@ public class DBMethods {
     }
 
     public static void addTranslation(Translation translation) {
-        testConn();
         try {
-            createConn();
             statement = connection.prepareStatement("insert into " + tableTranslations + " values(?,?,?,?)");
             int i = 1;
             statement.setInt(i++, translation.getId());
@@ -164,31 +177,25 @@ public class DBMethods {
 
     public static int getTermID(String term) {
         int id = 0;
-        testConn();
         try {
-            createConn();
-            statement = connection.prepareStatement("SELECT * FROM " + tableTerms + " WHERE term = ?");
-            statement.setString(1,term);
-            resultSet = statement.executeQuery();
+            getTermIDPrpStmt.setString(1,term);
+            resultSet = getTermIDPrpStmt.executeQuery();
             while (resultSet.next()) {
                 id = resultSet.getInt("ID");
             }
         } catch (SQLException sqlex) {
             sqlex.printStackTrace();
         } finally {
-            endConn(connection, resultSet, statement);
+            endConn(connection, resultSet, getTermIDPrpStmt);
         }
         return id;
     }
 
     public static Term getTermByID(int id) {
         Term data = new Term();
-        testConn();
         try {
-            createConn();
-            statement = connection.prepareStatement("SELECT * FROM " + tableTerms + " WHERE id = ?");
-            statement.setInt(1, id);
-            resultSet = statement.executeQuery();
+            getTermByIDPrpStmt.setInt(1, id);
+            resultSet = getTermByIDPrpStmt.executeQuery();
             resultSet.next();
             String term = resultSet.getString("Term");
             String meaning = resultSet.getString("Meaning");
@@ -197,19 +204,16 @@ public class DBMethods {
         } catch (SQLException sqlex) {
             sqlex.printStackTrace();
         } finally {
-            endConn(connection, resultSet, statement);
+            endConn(connection, resultSet, getTermByIDPrpStmt);
         }
         return data;
     }
 
     public static int getTranslatedTermID(int term1ID) {
         int id = 0;
-        testConn();
         try {
-            createConn();
-            statement = connection.prepareStatement("SELECT * FROM " + tableTranslations + " WHERE term1id = ?");
-            statement.setInt(1,term1ID);
-            resultSet = statement.executeQuery();
+            getTranslatedTermIDPrpStmt.setInt(1,term1ID);
+            resultSet = getTranslatedTermIDPrpStmt.executeQuery();
             while (resultSet.next()) {
                 if (resultSet.getInt("Priority")==1){
                     id = resultSet.getInt("Term2ID");
@@ -218,7 +222,7 @@ public class DBMethods {
         } catch (SQLException sqlex) {
             sqlex.printStackTrace();
         } finally {
-            endConn(connection, resultSet, statement);
+            endConn(connection, resultSet, getTranslatedTermIDPrpStmt);
         }
         return id;
     }
@@ -238,13 +242,14 @@ public class DBMethods {
     }
 
     private static void endConn(Connection connection, ResultSet resultSet, Statement statement) {
+
         try {
             if (null != connection) {
                 if (null != resultSet) {
                     resultSet.close();
                 }
-                statement.close();
-                connection.close();
+//                statement.close();
+//                connection.close();
             }
         } catch (SQLException sqlex) {
             sqlex.printStackTrace();
