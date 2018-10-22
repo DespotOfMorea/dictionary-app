@@ -9,14 +9,22 @@ import java.util.List;
 
 public class LanguageDaoImpl implements LanguageDao {
 
-    private static Connection connection = null;
-    private static PreparedStatement statement = null;
-    private static ResultSet resultSet = null;
-    private static String tableName = "languages";
+    private static Connection connection;
+    private static PreparedStatement statement;
+    private static ResultSet resultSet;
+    private static String tableName;
+    private static DBConnector dbConnector;
+
+    public LanguageDaoImpl() {
+        dbConnector = DBConnector.getInstance();
+        connection = dbConnector.getConn();
+        statement = null;
+        resultSet = null;
+        tableName = "languages";
+    }
 
     @Override
     public List<Language> getAll() {
-        connection = DBConnector.getConn();
         ArrayList<Language> data = new ArrayList<>();
         try {
             statement = connection.prepareStatement("SELECT * FROM " + tableName);
@@ -38,7 +46,6 @@ public class LanguageDaoImpl implements LanguageDao {
 
     @Override
     public Language getById(int id) {
-        connection = DBConnector.getConn();
         Language data = null;
         try {
             statement = connection.prepareStatement("SELECT * FROM " + tableName + " WHERE id = ?");
@@ -60,7 +67,6 @@ public class LanguageDaoImpl implements LanguageDao {
 
     @Override
     public Language getByEnglishName(String englishName) {
-        connection = DBConnector.getConn();
         Language data = null;
         try {
             statement = connection.prepareStatement("SELECT * FROM " + tableName + " WHERE englishName = ?");
@@ -82,7 +88,6 @@ public class LanguageDaoImpl implements LanguageDao {
 
     @Override
     public Language getByNativeName(String nativeName) {
-        connection = DBConnector.getConn();
         Language data = null;
         try {
             statement = connection.prepareStatement("SELECT * FROM " + tableName + " WHERE nativeName = ?");
@@ -104,7 +109,6 @@ public class LanguageDaoImpl implements LanguageDao {
 
     @Override
     public Language getByIsoCode(String isoCode) {
-        connection = DBConnector.getConn();
         Language data = null;
         try {
             statement = connection.prepareStatement("SELECT * FROM " + tableName + " WHERE isoCode = ?");
@@ -127,7 +131,6 @@ public class LanguageDaoImpl implements LanguageDao {
     @Override
     public boolean insertLanguage(Language language) {
         if (language!=null) {
-            connection = DBConnector.getConn();
             try {
                 statement = connection.prepareStatement("INSERT INTO " + tableName + " (englishName, nativeName, isoCode) " +
                         "SELECT * FROM (SELECT ?, ?, ?) AS tmp WHERE NOT EXISTS " +
@@ -155,7 +158,6 @@ public class LanguageDaoImpl implements LanguageDao {
     @Override
     public boolean updateLanguage(Language language) {
         if (language!=null) {
-            connection = DBConnector.getConn();
             try {
                 statement = connection.prepareStatement("UPDATE " + tableName + " SET EnglishName=?, NativeName=?, IsoCode=? WHERE id=?");
                 int i = 1;
@@ -179,7 +181,6 @@ public class LanguageDaoImpl implements LanguageDao {
     @Override
     public boolean deleteLanguage(Language language) {
         if (language!=null) {
-            connection = DBConnector.getConn();
             try {
                 statement = connection.prepareStatement("DELETE FROM " + tableName + " WHERE id = ?");
                 int i = 1;
@@ -209,12 +210,11 @@ public class LanguageDaoImpl implements LanguageDao {
                 if (null != resultSet) {
                     resultSet.close();
                 }
-//                statement.close();
+                statement.close();
 //                connection.close();
             }
         } catch (SQLException sqlex) {
             sqlex.printStackTrace();
         }
     }
-
 }

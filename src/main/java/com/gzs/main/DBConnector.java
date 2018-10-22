@@ -4,20 +4,37 @@ import java.sql.*;
 
 public class DBConnector {
 
-    // Local variables with connection parameters.
-    static Connection connection = null;
+    private static DBConnector instance;
+    private static Connection connection = null;
     private static String dbPath = "jdbc:mysql://localhost/";
     private static String dbName = "geodictionary";
     private static String username = "root";
     private static String password = "";
 
-    static {
+    private DBConnector(){
+        connection = null;
+        dbPath = "jdbc:mysql://localhost/";
+        dbName = "geodictionary";
+        username = "root";
+        password = "";
         try {
             createConn();
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
+
+    public static synchronized DBConnector getInstance(){
+        if(instance == null){
+            synchronized (DBConnector.class) {
+                if(instance == null){
+                    instance = new DBConnector();
+                }
+            }
+        }
+        return instance;
+    }
+
 
     private static void createConn() throws SQLException {
         connection = DriverManager.getConnection(dbPath + dbName, username, password);
@@ -26,7 +43,6 @@ public class DBConnector {
     public static Connection getConn(){
         return connection;
     }
-
 
     private static void endConn() {
         try {

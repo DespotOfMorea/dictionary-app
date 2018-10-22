@@ -15,10 +15,12 @@ import javax.ws.rs.core.MediaType;
 public class RestMethods {
     private TermDao termDao;
     private TranslationDao translationDao;
+    private Term term;
 
     public RestMethods() {
         termDao = new TermDaoImpl();
         translationDao = new TranslationDaoImpl();
+        term = null;
     }
 
     @GET
@@ -33,13 +35,12 @@ public class RestMethods {
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces(MediaType.APPLICATION_JSON)
     public String getTerm(@QueryParam("term") String termName) throws JsonProcessingException {
-
-
         int term1ID = termDao.getByTerm(termName).getId();
         if (term1ID != 0) {
-            int term2ID = translationDao.getByTerm1Id(term1ID).getTerm2ID().getId();
-            if (term2ID != 0) {
-                Term term = termDao.getById(term2ID);
+            int term2ID = translationDao.getByTerm1Id(term1ID).getId();
+            if (term2ID!=0){
+                term2ID = translationDao.getByTerm1Id(term1ID).getTerm2ID().getId();
+                term = termDao.getById(term2ID);
                 ObjectMapper mapper = new ObjectMapper();
                 return mapper.writeValueAsString(term);
             } else {

@@ -9,10 +9,25 @@ import java.util.List;
 
 public class TranslationDaoImpl  implements TranslationDao {
 
-    private static Connection connection = null;
-    private static PreparedStatement statement = null;
-    private static ResultSet resultSet = null;
-    private static String tableName = "translations";
+    private static Connection connection;
+    private static PreparedStatement statement;
+    private static ResultSet resultSet;
+    private static String tableName;
+    private static PreparedStatement getTranslationByTerm1IdPrpStmt;
+    private static DBConnector dbConnector;
+
+    public TranslationDaoImpl () {
+        dbConnector = DBConnector.getInstance();
+        connection = dbConnector.getConn();
+        statement = null;
+        resultSet = null;
+        tableName = "translations";
+        try {
+            getTranslationByTerm1IdPrpStmt = connection.prepareStatement("SELECT * FROM " + tableName + " WHERE term1id = ?");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 
     @Override
     public List<Translation> getAll() {
@@ -21,8 +36,7 @@ public class TranslationDaoImpl  implements TranslationDao {
 
     @Override
     public Translation getById(int id) {
-        connection = DBConnector.getConn();
-        Translation data = null;
+        Translation data = new Translation();
         try {
             statement = connection.prepareStatement("SELECT * FROM " + tableName + " WHERE id = ?");
             statement.setInt(1, id);
@@ -43,12 +57,10 @@ public class TranslationDaoImpl  implements TranslationDao {
 
     @Override
     public Translation getByTerm1Id(int term1ID) {
-        connection = DBConnector.getConn();
-        Translation data = null;
+        Translation data = new Translation();
         try {
-            statement = connection.prepareStatement("SELECT * FROM " + tableName + " WHERE term1id = ?");
-            statement.setInt(1, term1ID);
-            resultSet = statement.executeQuery();
+            getTranslationByTerm1IdPrpStmt.setInt(1,term1ID);
+            resultSet = getTranslationByTerm1IdPrpStmt.executeQuery();
             if (resultSet.next()) {
                 int id = resultSet.getInt("ID");
                 int term2ID = resultSet.getInt("Term2ID");
@@ -65,8 +77,7 @@ public class TranslationDaoImpl  implements TranslationDao {
 
     @Override
     public Translation getByTerm2Id(int term2ID) {
-        connection = DBConnector.getConn();
-        Translation data = null;
+        Translation data = new Translation();
         try {
             statement = connection.prepareStatement("SELECT * FROM " + tableName + " WHERE term2id = ?");
             statement.setInt(1, term2ID);
@@ -88,7 +99,6 @@ public class TranslationDaoImpl  implements TranslationDao {
     @Override
     public boolean insertTranslation(Translation translation) {
         if (translation!=null) {
-            connection = DBConnector.getConn();
             try {
                 statement = connection.prepareStatement("INSERT INTO " + tableName + " (term1id, term2id, priority) " +
                         "SELECT * FROM (SELECT ?, ?, ?) AS tmp WHERE NOT EXISTS " +
@@ -116,7 +126,6 @@ public class TranslationDaoImpl  implements TranslationDao {
     @Override
     public boolean updateTranslation(Translation translation) {
         if (translation!=null) {
-            connection = DBConnector.getConn();
             try {
                 statement = connection.prepareStatement("UPDATE " + tableName + " SET term1id=?, term2id=?, priority=? WHERE id=?");
                 int i = 1;
@@ -140,7 +149,6 @@ public class TranslationDaoImpl  implements TranslationDao {
     @Override
     public boolean deleteTranslation(Translation translation) {
         if (translation!=null) {
-            connection = DBConnector.getConn();
             try {
                 statement = connection.prepareStatement("DELETE FROM " + tableName + " WHERE id = ?");
                 int i = 1;
@@ -170,7 +178,9 @@ public class TranslationDaoImpl  implements TranslationDao {
                 if (null != resultSet) {
                     resultSet.close();
                 }
-//                statement.close();
+                if (null != statement) {
+                    statement.close();
+                }
 //                connection.close();
             }
         } catch (SQLException sqlex) {

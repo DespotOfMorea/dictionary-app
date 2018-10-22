@@ -24,13 +24,12 @@ public class DBMethods {
     private static PreparedStatement getTermIDPrpStmt;
 
     static {
-
-        try {
+/*        try {
             createConn();
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        try {
+       try {
             getTranslatedTermIDPrpStmt = connection.prepareStatement("SELECT * FROM " + tableTranslations + " WHERE term1id = ?");
         } catch (SQLException e) {
             e.printStackTrace();
@@ -45,7 +44,7 @@ public class DBMethods {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-    }
+*/     }
 
     public static void createDB() {
         try {
@@ -59,6 +58,7 @@ public class DBMethods {
 
     public static void createTableLanguages() {
         try {
+            createConn();
             Statement st = connection.createStatement();
             int rs = st.executeUpdate("CREATE TABLE IF NOT EXISTS " + tableLanguages + " (" +
                     "ID int NOT NULL AUTO_INCREMENT, " +
@@ -74,6 +74,7 @@ public class DBMethods {
 
     public static void createTableTerms() {
         try {
+            createConn();
             Statement st = connection.createStatement();
             int rs = st.executeUpdate("CREATE TABLE IF NOT EXISTS " + tableTerms + " (" +
                     "ID int NOT NULL AUTO_INCREMENT, " +
@@ -90,6 +91,7 @@ public class DBMethods {
 
     public static void createTableTranslations() {
         try {
+            createConn();
             Statement st = connection.createStatement();
             int rs = st.executeUpdate("CREATE TABLE IF NOT EXISTS " + tableTranslations + " (" +
                     "ID int NOT NULL AUTO_INCREMENT, " +

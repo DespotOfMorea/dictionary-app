@@ -11,14 +11,30 @@ import java.util.List;
 
 public class TermDaoImpl implements TermDao {
 
-    private static Connection connection = null;
-    private static PreparedStatement statement = null;
-    private static ResultSet resultSet = null;
-    private static String tableName = "terms";
+    private static Connection connection;
+    private static PreparedStatement statement;
+    private static ResultSet resultSet;
+    private static String tableName;
+    private static PreparedStatement getTermByIDPrpStmt;
+    private static PreparedStatement getTermByTermPrpStmt;
+    private static DBConnector dbConnector;
+
+    public TermDaoImpl () {
+        dbConnector = DBConnector.getInstance();
+        connection = dbConnector.getConn();
+        statement = null;
+        resultSet = null;
+        tableName = "terms";
+        try {
+            getTermByIDPrpStmt = connection.prepareStatement("SELECT * FROM " + tableName + " WHERE id = ?");
+            getTermByTermPrpStmt = connection.prepareStatement("SELECT * FROM " + tableName + " WHERE term = ?");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 
     @Override
     public List<Term> getAll() {
-        connection = DBConnector.getConn();
         ArrayList<Term> data = new ArrayList<>();
         try {
             statement = connection.prepareStatement("SELECT * FROM " + tableName);
@@ -40,12 +56,10 @@ public class TermDaoImpl implements TermDao {
 
     @Override
     public Term getById(int id) {
-        connection = DBConnector.getConn();
-        Term data = null;
+        Term data = new Term();
         try {
-            statement = connection.prepareStatement("SELECT * FROM " + tableName + " WHERE id = ?");
-            statement.setInt(1, id);
-            resultSet = statement.executeQuery();
+            getTermByIDPrpStmt.setInt(1,id);
+            resultSet = getTermByIDPrpStmt.executeQuery();
             if (resultSet.next()) {
                 String term = resultSet.getString("Term");
                 String meaning = resultSet.getString("Meaning");
@@ -62,12 +76,10 @@ public class TermDaoImpl implements TermDao {
 
     @Override
     public Term getByTerm(String term) {
-        connection = DBConnector.getConn();
-        Term data = null;
+        Term data = new Term();
         try {
-            statement = connection.prepareStatement("SELECT * FROM " + tableName + " WHERE term = ?");
-            statement.setString(1, term);
-            resultSet = statement.executeQuery();
+            getTermByTermPrpStmt.setString(1,term);
+            resultSet = getTermByTermPrpStmt.executeQuery();
             if (resultSet.next()) {
                 int id = resultSet.getInt("ID");
                 String meaning = resultSet.getString("Meaning");
@@ -85,7 +97,6 @@ public class TermDaoImpl implements TermDao {
     @Override
     public boolean insertTerm(Term term) {
         if (term!=null) {
-            connection = DBConnector.getConn();
             try {
                 statement = connection.prepareStatement("INSERT INTO " + tableName + " (term, meaning, languageID) " +
                         "SELECT * FROM (SELECT ?, ?, ?) AS tmp WHERE NOT EXISTS " +
@@ -113,7 +124,6 @@ public class TermDaoImpl implements TermDao {
     @Override
     public boolean updateTerm(Term term) {
         if (term!=null) {
-            connection = DBConnector.getConn();
             try {
                 statement = connection.prepareStatement("UPDATE " + tableName + " SET term=?, meaning=?, languageID=? WHERE id=?");
                 int i = 1;
@@ -137,7 +147,6 @@ public class TermDaoImpl implements TermDao {
     @Override
     public boolean deleteTerm(Term term) {
         if (term!=null) {
-            connection = DBConnector.getConn();
             try {
                 statement = connection.prepareStatement("DELETE FROM " + tableName + " WHERE id = ?");
                 int i = 1;
@@ -167,7 +176,9 @@ public class TermDaoImpl implements TermDao {
                 if (null != resultSet) {
                     resultSet.close();
                 }
-//                statement.close();
+                if (null != statement) {
+                    statement.close();
+                }
 //                connection.close();
             }
         } catch (SQLException sqlex) {
