@@ -10,7 +10,13 @@ import javax.ws.rs.core.MediaType;
 @Path("/api")
 public class RestMethods {
 
-    public RestMethods() {}
+    private ObjectMapper mapper;
+    private Term term;
+
+    public RestMethods() {
+        mapper = new ObjectMapper();
+        term = null;
+    }
 
     @GET
     @Path("/tst")
@@ -28,14 +34,17 @@ public class RestMethods {
         if (term1ID != 0) {
             int term2ID = DBMethods.getTranslatedTermID(term1ID);
             if (term2ID != 0) {
-                Term term = DBMethods.getTermByID(term2ID);
-                ObjectMapper mapper = new ObjectMapper();
+                term = DBMethods.getTermByID(term2ID);
                 return mapper.writeValueAsString(term);
             } else {
-                return "<h2>Hello, there is no translation for " + termName + " in dictionary.</h2>";
+                term = new Term();
+                term.setTerm("There is no translation for " + termName + " in dictionary.");
+                return mapper.writeValueAsString(term);
             }
         } else {
-            return "<h2>Hello, there is no term " + termName + " in dictionary.</h2>";
+            term = new Term();
+            term.setTerm("There is no term " + termName + " in dictionary.");
+            return mapper.writeValueAsString(term);
         }
     }
 
