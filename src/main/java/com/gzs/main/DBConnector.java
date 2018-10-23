@@ -44,7 +44,7 @@ public class DBConnector {
         return connection;
     }
 
-    private static void endConn() {
+    public static void endConn() {
         try {
             if (null != connection) {
                connection.close();

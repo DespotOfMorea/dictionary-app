@@ -11,12 +11,18 @@ public class App {
 
     private static final int PORT = 2222;
     private static final String CONTEXT_ROOT = "/";
+    private static DBConnector dbConnector;
 
     public static void main(String[] args) throws Exception {
 //        createDataBase();
 //        generateDBData();
-      
+
         log.info("Starting application");
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            dbConnector = DBConnector.getInstance();
+            dbConnector.endConn();
+            log.info("Application closed.");
+        }));
       
         Server jettyServer = new Server(PORT);
 
