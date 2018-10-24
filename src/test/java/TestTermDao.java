@@ -5,10 +5,8 @@ import org.mockito.MockitoAnnotations;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
-
 import java.util.ArrayList;
 import java.util.List;
-
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
@@ -37,7 +35,6 @@ public class TestTermDao {
                 new Object []{0, new Term()},
                 new Object []{45, new Term()},
                 new Object []{2, terms.get(0)},
-                new Object []{10, "Rased", "Pukotina", 10},
         };
     }
 
@@ -49,9 +46,9 @@ public class TestTermDao {
                 new Object []{"Cave", new Term()},
                 new Object []{null, new Term()},
                 new Object []{"Rased", terms.get(1)},
-                new Object []{"Rased", "Pukotina", 10},
         };
     }
+
 
     @Test(dataProvider="EqualsAssertionsProviderForID")
     public void testGetById(int num, Term term) {
