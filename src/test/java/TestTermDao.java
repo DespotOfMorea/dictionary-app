@@ -44,7 +44,7 @@ public class TestTermDao {
                 new Object []{"Pukotina", terms.get(2)},
                 new Object []{"Fold", terms.get(0)},
                 new Object []{"Cave", new Term()},
-                new Object []{null, new Term()},
+                new Object []{null, new Term("Rased","...",17)},
                 new Object []{"Rased", terms.get(1)},
         };
     }
