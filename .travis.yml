@@ -1,5 +1,5 @@
 language: java
-script: mvn install -DskipTests=true -Dmaven.javadoc.skip=true -B -V
+script: mvn clean install
 
 after_success:
   - mvn clean org.eluder.coveralls:coveralls-maven-plugin:report
