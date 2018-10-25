@@ -130,7 +130,6 @@
                  <configuration>
                    <excludes>
                      <exclude>**/TestMockitoDBMethods.java</exclude>
-                     <exclude>**/TestTermDao.java#testGetById</exclude>
                    </excludes>
                  </configuration>
                </plugin>
