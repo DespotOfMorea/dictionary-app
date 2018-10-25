@@ -16,7 +16,8 @@ CREATE TABLE IF NOT EXISTS terms (
                     Meaning text,
                     LanguageID int NOT NULL,
                     PRIMARY KEY (ID),
-                    FOREIGN KEY (LanguageID) REFERENCES Languages(ID))
+                    FOREIGN KEY (LanguageID) REFERENCES Languages(ID),
+                    CONSTRAINT UQ_Term UNIQUE(Term, LanguageID))
 					ENGINE=INNODB;
 
 CREATE TABLE IF NOT EXISTS translations (
