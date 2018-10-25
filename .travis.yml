@@ -1,5 +1,5 @@
 language: java
-script: mvn clean install -Dtest=*testGetByTerm,!TestTermDao
+script: mvn clean install -Dtest=*testGetByTerm,!FromTestTermDao
 env:
   - MYSQL_HOST=127.0.0.1 MYSQL_USER=root
 services:
