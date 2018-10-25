@@ -129,6 +129,7 @@
                  <version>2.22.1</version>
                  <configuration>
                    <excludes>
+                     <exclude>**/TestDBMethods.java</exclude>
                      <exclude>**/TestMockitoDBMethods.java</exclude>
                    </excludes>
                  </configuration>
