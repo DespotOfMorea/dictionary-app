@@ -16,19 +16,19 @@ import static org.testng.Assert.assertEquals;
 public class TestTermDao {
 
     @Mock
-    TermDao dao;
+    private TermDao dao;
 
-    List<Term> terms = new ArrayList<>();
+    private List<Term> terms = new ArrayList<>();
 
 
     @BeforeClass
-    public void setUp() {
+    private void setUp() {
         MockitoAnnotations.initMocks(this);
         terms=getTermsList();
     }
 
     @DataProvider(name="EqualsAssertionsProviderForID")
-    public Object[][] createConcatenationAssertionSetForID(){
+    private Object[][] createConcatenationAssertionSetForID(){
         return new Object[][]{
                 new Object []{17, terms.get(2)},
                 new Object []{10, terms.get(1)},
@@ -39,7 +39,7 @@ public class TestTermDao {
     }
 
     @DataProvider(name="EqualsAssertionsProviderForTerm")
-    public Object[][] createConcatenationAssertionSetForTerm(){
+    private Object[][] createConcatenationAssertionSetForTerm(){
         return new Object[][]{
                 new Object []{"Pukotina", terms.get(2)},
                 new Object []{"Fold", terms.get(0)},
