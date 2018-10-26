@@ -13,11 +13,14 @@ import javax.ws.rs.core.MediaType;
 
 @Path("/api")
 public class RestMethods {
+
+    private ObjectMapper mapper;
     private TermDao termDao;
     private TranslationDao translationDao;
     private Term term;
 
     public RestMethods() {
+        mapper = new ObjectMapper();
         termDao = new TermDaoImpl();
         translationDao = new TranslationDaoImpl();
         term = null;
@@ -31,7 +34,7 @@ public class RestMethods {
     }
 
     @GET
-    @Path("/post")
+    @Path("/get")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces(MediaType.APPLICATION_JSON)
     public String getTerm(@QueryParam("term") String termName) throws JsonProcessingException {
@@ -44,11 +47,14 @@ public class RestMethods {
                 ObjectMapper mapper = new ObjectMapper();
                 return mapper.writeValueAsString(term);
             } else {
-                return "<h2>Hello, there is no translation for " + termName + " in dictionary.</h2>";
+                term = new Term();
+                term.setTerm("There is no translation for " + termName + " in dictionary.");
+                return mapper.writeValueAsString(term);
             }
         } else {
-            return "<h2>Hello, there is no term " + termName + " in dictionary.</h2>";
+            term = new Term();
+            term.setTerm("There is no term " + termName + " in dictionary.");
+            return mapper.writeValueAsString(term);
         }
     }
-
 }
