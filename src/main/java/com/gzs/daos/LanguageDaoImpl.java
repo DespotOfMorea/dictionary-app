@@ -2,33 +2,51 @@ package com.gzs.daos;
 
 import com.gzs.main.DBConnector;
 import com.gzs.model.Language;
+import lombok.extern.slf4j.Slf4j;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
+@Slf4j
 public class LanguageDaoImpl implements LanguageDao {
 
-    private static Connection connection;
-    private static PreparedStatement statement;
-    private static ResultSet resultSet;
     private static String tableName;
     private static DBConnector dbConnector;
+    private static Connection connection;
+    private static PreparedStatement getAllStatement;
+    private static PreparedStatement getByIdStatement;
+    private static PreparedStatement getByEnglishNameStatement;
+    private static PreparedStatement getByNativeNameStatement;
+    private static PreparedStatement getByIsoCodeStatement;
+    private static PreparedStatement insertStatement;
+    private static PreparedStatement updateStatement;
+    private static PreparedStatement deleteStatement;
 
-    public LanguageDaoImpl() {
+    static {
+        tableName = "languages";
         dbConnector = DBConnector.getInstance();
         connection = dbConnector.getConn();
-        statement = null;
-        resultSet = null;
-        tableName = "languages";
+        try {
+            getAllStatement = connection.prepareStatement("SELECT * FROM " + tableName);
+            getByIdStatement = connection.prepareStatement("SELECT * FROM " + tableName + " WHERE id = ?");
+            getByEnglishNameStatement = connection.prepareStatement("SELECT * FROM " + tableName + " WHERE englishName = ?");
+            getByNativeNameStatement = connection.prepareStatement("SELECT * FROM " + tableName + " WHERE nativeName = ?");
+            getByIsoCodeStatement = connection.prepareStatement("SELECT * FROM " + tableName + " WHERE isoCode = ?");
+            insertStatement = connection.prepareStatement("INSERT INTO " + tableName + " VALUES (?,?,?,?)");
+            updateStatement = connection.prepareStatement("UPDATE " + tableName + " SET EnglishName=?, NativeName=?, IsoCode=? WHERE id=?");
+            deleteStatement = connection.prepareStatement("DELETE FROM " + tableName + " WHERE id = ?");
+        } catch (SQLException ex) {
+            log.error(ex.getMessage(), ex);
+        }
     }
 
     @Override
     public List<Language> getAll() {
-        ArrayList<Language> data = new ArrayList<>();
+        List<Language> data = new ArrayList<>();
+        ResultSet resultSet = null;
         try {
-            statement = connection.prepareStatement("SELECT * FROM " + tableName);
-            resultSet = statement.executeQuery();
+            resultSet = getAllStatement.executeQuery();
             while (resultSet.next()) {
                 int id = resultSet.getInt("ID");
                 String englishName = resultSet.getString("EnglishName");
@@ -36,10 +54,10 @@ public class LanguageDaoImpl implements LanguageDao {
                 String isoCode = resultSet.getString("IsoCode");
                 data.add(new Language(id, englishName, nativeName, isoCode));
             }
-        } catch (SQLException sqlex) {
-            sqlex.printStackTrace();
+        } catch (SQLException ex) {
+            log.error(ex.getMessage(), ex);
         } finally {
-            endConn(connection, resultSet, statement);
+            endResultSet(resultSet);
         }
         return data;
     }
@@ -47,20 +65,20 @@ public class LanguageDaoImpl implements LanguageDao {
     @Override
     public Language getById(int id) {
         Language data = null;
+        ResultSet resultSet = null;
         try {
-            statement = connection.prepareStatement("SELECT * FROM " + tableName + " WHERE id = ?");
-            statement.setInt(1, id);
-            resultSet = statement.executeQuery();
+            getByIdStatement.setInt(1, id);
+            resultSet = getByIdStatement.executeQuery();
             if (resultSet.next()) {
                 String englishName = resultSet.getString("EnglishName");
                 String nativeName = resultSet.getString("NativeName");
                 String isoCode = resultSet.getString("IsoCode");
                 data = new Language(id, englishName, nativeName, isoCode);
             }
-        } catch (SQLException sqlex) {
-            sqlex.printStackTrace();
+        } catch (SQLException ex) {
+            log.error(ex.getMessage(), ex);
         } finally {
-            endConn(connection, resultSet, statement);
+            endResultSet(resultSet);
         }
         return data;
     }
@@ -68,20 +86,20 @@ public class LanguageDaoImpl implements LanguageDao {
     @Override
     public Language getByEnglishName(String englishName) {
         Language data = null;
+        ResultSet resultSet = null;
         try {
-            statement = connection.prepareStatement("SELECT * FROM " + tableName + " WHERE englishName = ?");
-            statement.setString(1, englishName);
-            resultSet = statement.executeQuery();
+            getByEnglishNameStatement.setString(1, englishName);
+            resultSet = getByEnglishNameStatement.executeQuery();
             if (resultSet.next()) {
                 int id = resultSet.getInt("ID");
                 String nativeName = resultSet.getString("NativeName");
                 String isoCode = resultSet.getString("IsoCode");
                 data = new Language(id, englishName, nativeName, isoCode);
             }
-        } catch (SQLException sqlex) {
-            sqlex.printStackTrace();
+        } catch (SQLException ex) {
+            log.error(ex.getMessage(), ex);
         } finally {
-            endConn(connection, resultSet, statement);
+            endResultSet(resultSet);
         }
         return data;
     }
@@ -89,20 +107,20 @@ public class LanguageDaoImpl implements LanguageDao {
     @Override
     public Language getByNativeName(String nativeName) {
         Language data = null;
+        ResultSet resultSet = null;
         try {
-            statement = connection.prepareStatement("SELECT * FROM " + tableName + " WHERE nativeName = ?");
-            statement.setString(1, nativeName);
-            resultSet = statement.executeQuery();
+            getByNativeNameStatement.setString(1, nativeName);
+            resultSet = getByNativeNameStatement.executeQuery();
             if (resultSet.next()) {
                 int id = resultSet.getInt("ID");
                 String englishName = resultSet.getString("EnglishName");
                 String isoCode = resultSet.getString("IsoCode");
                 data = new Language(id, englishName, nativeName, isoCode);
             }
-        } catch (SQLException sqlex) {
-            sqlex.printStackTrace();
+        } catch (SQLException ex) {
+            log.error(ex.getMessage(), ex);
         } finally {
-            endConn(connection, resultSet, statement);
+            endResultSet(resultSet);
         }
         return data;
     }
@@ -110,20 +128,20 @@ public class LanguageDaoImpl implements LanguageDao {
     @Override
     public Language getByIsoCode(String isoCode) {
         Language data = null;
+        ResultSet resultSet = null;
         try {
-            statement = connection.prepareStatement("SELECT * FROM " + tableName + " WHERE isoCode = ?");
-            statement.setString(1, isoCode);
-            resultSet = statement.executeQuery();
+            getByIsoCodeStatement.setString(1, isoCode);
+            resultSet = getByIsoCodeStatement.executeQuery();
             if (resultSet.next()) {
                 int id = resultSet.getInt("ID");
                 String englishName = resultSet.getString("EnglishName");
                 String nativeName = resultSet.getString("NativeName");
                 data = new Language(id, englishName, nativeName, isoCode);
             }
-        } catch (SQLException sqlex) {
-            sqlex.printStackTrace();
+        } catch (SQLException ex) {
+            log.error(ex.getMessage(), ex);
         } finally {
-            endConn(connection, resultSet, statement);
+            endResultSet(resultSet);
         }
         return data;
     }
@@ -132,23 +150,16 @@ public class LanguageDaoImpl implements LanguageDao {
     public boolean insertLanguage(Language language) {
         if (language!=null) {
             try {
-                statement = connection.prepareStatement("INSERT INTO " + tableName + " (englishName, nativeName, isoCode) " +
-                        "SELECT * FROM (SELECT ?, ?, ?) AS tmp WHERE NOT EXISTS " +
-                        "(SELECT * FROM  " + tableName + " WHERE englishName=? AND nativeName=? AND isoCode=?) LIMIT 1");
                 int i = 1;
-                statement.setString(i++, language.getEnglishName());
-                statement.setString(i++, language.getNativeName());
-                statement.setString(i++, language.getIsoCode());
-                statement.setString(i++, language.getEnglishName());
-                statement.setString(i++, language.getNativeName());
-                statement.setString(i++, language.getIsoCode());
+                insertStatement.setInt(i++, language.getId());
+                insertStatement.setString(i++, language.getEnglishName());
+                insertStatement.setString(i++, language.getNativeName());
+                insertStatement.setString(i++, language.getIsoCode());
 
-                return successfulAction(statement.executeUpdate());
+                return successfulAction(insertStatement.executeUpdate());
             } catch (SQLException ex) {
-                ex.printStackTrace();
+                log.error(ex.getMessage(), ex);
                 return false;
-            } finally {
-                endConn(connection, resultSet, statement);
             }
         } else {
             return false;
@@ -159,19 +170,16 @@ public class LanguageDaoImpl implements LanguageDao {
     public boolean updateLanguage(Language language) {
         if (language!=null) {
             try {
-                statement = connection.prepareStatement("UPDATE " + tableName + " SET EnglishName=?, NativeName=?, IsoCode=? WHERE id=?");
                 int i = 1;
-                statement.setString(i++, language.getEnglishName());
-                statement.setString(i++, language.getNativeName());
-                statement.setString(i++, language.getIsoCode());
-                statement.setInt(i++, language.getId());
+                updateStatement.setString(i++, language.getEnglishName());
+                updateStatement.setString(i++, language.getNativeName());
+                updateStatement.setString(i++, language.getIsoCode());
+                updateStatement.setInt(i++, language.getId());
 
-                return successfulAction(statement.executeUpdate());
+                return successfulAction(updateStatement.executeUpdate());
             } catch (SQLException ex) {
-                ex.printStackTrace();
+                log.error(ex.getMessage(), ex);
                 return false;
-            } finally {
-                endConn(connection, resultSet, statement);
             }
         } else {
             return false;
@@ -182,16 +190,13 @@ public class LanguageDaoImpl implements LanguageDao {
     public boolean deleteLanguage(Language language) {
         if (language!=null) {
             try {
-                statement = connection.prepareStatement("DELETE FROM " + tableName + " WHERE id = ?");
                 int i = 1;
-                statement.setInt(i++, language.getId());
+                deleteStatement.setInt(i++, language.getId());
 
-                return successfulAction(statement.executeUpdate());
+                return successfulAction(deleteStatement.executeUpdate());
             } catch (SQLException ex) {
-                ex.printStackTrace();
+                log.error(ex.getMessage(), ex);
                 return false;
-            } finally {
-                endConn(connection, resultSet, statement);
             }
         } else {
             return false;
@@ -204,17 +209,34 @@ public class LanguageDaoImpl implements LanguageDao {
         return result;
     }
 
-    private static void endConn(Connection connection, ResultSet resultSet, Statement statement) {
+    private static void endResultSet(ResultSet resultSet) {
         try {
-            if (null != connection) {
-                if (null != resultSet) {
-                    resultSet.close();
-                }
-                statement.close();
-//                connection.close();
+            if (null != resultSet) {
+                resultSet.close();
             }
-        } catch (SQLException sqlex) {
-            sqlex.printStackTrace();
+        } catch (SQLException ex) {
+            log.error(ex.getMessage(), ex);
+        }
+    }
+
+    public static void endStatements() {
+        endStatemnt(getAllStatement);
+        endStatemnt(getByIdStatement);
+        endStatemnt(getByEnglishNameStatement);
+        endStatemnt(getByNativeNameStatement);
+        endStatemnt(getByIsoCodeStatement);
+        endStatemnt(insertStatement);
+        endStatemnt(updateStatement);
+        endStatemnt(deleteStatement);
+    }
+
+    private static void endStatemnt (Statement statement) {
+        try {
+            if (null != statement) {
+                statement.close();
+            }
+        } catch (SQLException ex) {
+            log.error(ex.getMessage(), ex);
         }
     }
 }

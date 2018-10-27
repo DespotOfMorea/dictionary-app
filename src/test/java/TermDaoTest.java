@@ -13,7 +13,7 @@ import static org.mockito.Mockito.when;
 import static org.testng.Assert.assertEquals;
 
 
-public class TestTermDao {
+public class TermDaoTest {
 
     @Mock
     private TermDao dao;

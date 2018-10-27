@@ -8,7 +8,7 @@ import static org.mockito.Mockito.when;
 import static org.testng.Assert.assertEquals;
 
 @PrepareForTest(DBMethods.class)
-public class TestMockitoDBMethods extends PowerMockTestCase {
+public class MockitoDBMethodsTest extends PowerMockTestCase {
 
     @DataProvider(name="EqualsAssertionsProvider")
     public Object[][] createConcatenationAssertionSet(){

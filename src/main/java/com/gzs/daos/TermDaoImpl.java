@@ -1,44 +1,48 @@
 package com.gzs.daos;
 
 import com.gzs.main.DBConnector;
-import com.gzs.main.DBMethods;
-import com.gzs.model.Language;
 import com.gzs.model.Term;
+import lombok.extern.slf4j.Slf4j;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
+@Slf4j
 public class TermDaoImpl implements TermDao {
 
-    private static Connection connection;
-    private static PreparedStatement statement;
-    private static ResultSet resultSet;
     private static String tableName;
-    private static PreparedStatement getTermByIDPrpStmt;
-    private static PreparedStatement getTermByTermPrpStmt;
     private static DBConnector dbConnector;
+    private static Connection connection;
+    private static PreparedStatement getAllStatement;
+    private static PreparedStatement getByIdstatement;
+    private static PreparedStatement getByTermstatement;
+    private static PreparedStatement insertStatement;
+    private static PreparedStatement updateStatement;
+    private static PreparedStatement deleteStatement;
 
-    public TermDaoImpl () {
+    static {
+        tableName = "terms";
         dbConnector = DBConnector.getInstance();
         connection = dbConnector.getConn();
-        statement = null;
-        resultSet = null;
-        tableName = "terms";
         try {
-            getTermByIDPrpStmt = connection.prepareStatement("SELECT * FROM " + tableName + " WHERE id = ?");
-            getTermByTermPrpStmt = connection.prepareStatement("SELECT * FROM " + tableName + " WHERE term = ?");
-        } catch (SQLException e) {
-            e.printStackTrace();
+            getAllStatement = connection.prepareStatement("SELECT * FROM " + tableName);
+            getByIdstatement = connection.prepareStatement("SELECT * FROM " + tableName + " WHERE id = ?");
+            getByTermstatement = connection.prepareStatement("SELECT * FROM " + tableName + " WHERE term = ?");
+            insertStatement = connection.prepareStatement("INSERT INTO " + tableName + " VALUES (?,?,?,?)");
+            updateStatement = connection.prepareStatement("UPDATE " + tableName + " SET term=?, meaning=?, languageID=? WHERE id=?");
+            deleteStatement = connection.prepareStatement("DELETE FROM " + tableName + " WHERE id = ?");
+        } catch (SQLException ex) {
+            log.error(ex.getMessage(), ex);
         }
     }
 
     @Override
     public List<Term> getAll() {
-        ArrayList<Term> data = new ArrayList<>();
+        List<Term> data = new ArrayList<>();
+        ResultSet resultSet = null;
         try {
-            statement = connection.prepareStatement("SELECT * FROM " + tableName);
-            resultSet = statement.executeQuery();
+            resultSet = getAllStatement.executeQuery();
             while (resultSet.next()) {
                 int id = resultSet.getInt("ID");
                 String term = resultSet.getString("Term");
@@ -46,10 +50,10 @@ public class TermDaoImpl implements TermDao {
                 int languageID = resultSet.getInt("LanguageID");
                 data.add(new Term(id, term, meaning, languageID));
             }
-        } catch (SQLException sqlex) {
-            sqlex.printStackTrace();
+        } catch (SQLException ex) {
+            log.error(ex.getMessage(), ex);
         } finally {
-            endConn(connection, resultSet, statement);
+            endResultSet(resultSet);
         }
         return data;
     }
@@ -57,19 +61,20 @@ public class TermDaoImpl implements TermDao {
     @Override
     public Term getById(int id) {
         Term data = new Term();
+        ResultSet resultSet = null;
         try {
-            getTermByIDPrpStmt.setInt(1,id);
-            resultSet = getTermByIDPrpStmt.executeQuery();
+            getByIdstatement.setInt(1,id);
+            resultSet = getByIdstatement.executeQuery();
             if (resultSet.next()) {
                 String term = resultSet.getString("Term");
                 String meaning = resultSet.getString("Meaning");
                 int languageID = resultSet.getInt("LanguageID");
                 data = new Term(id, term, meaning, languageID);
             }
-        } catch (SQLException sqlex) {
-            sqlex.printStackTrace();
+        } catch (SQLException ex) {
+            log.error(ex.getMessage(), ex);
         } finally {
-            endConn(connection, resultSet, statement);
+            endResultSet(resultSet);
         }
         return data;
     }
@@ -77,19 +82,18 @@ public class TermDaoImpl implements TermDao {
     @Override
     public Term getByTerm(String term) {
         Term data = new Term();
+        ResultSet resultSet = null;
         try {
-            getTermByTermPrpStmt.setString(1,term);
-            resultSet = getTermByTermPrpStmt.executeQuery();
+            getByTermstatement.setString(1,term);
+            resultSet = getByTermstatement.executeQuery();
             if (resultSet.next()) {
                 int id = resultSet.getInt("ID");
                 String meaning = resultSet.getString("Meaning");
                 int languageID = resultSet.getInt("LanguageID");
                 data = new Term(id, term, meaning, languageID);
             }
-        } catch (SQLException sqlex) {
-            sqlex.printStackTrace();
-        } finally {
-            endConn(connection, resultSet, statement);
+        } catch (SQLException ex) {
+            log.error(ex.getMessage(), ex);
         }
         return data;
     }
@@ -98,23 +102,16 @@ public class TermDaoImpl implements TermDao {
     public boolean insertTerm(Term term) {
         if (term!=null) {
             try {
-                statement = connection.prepareStatement("INSERT INTO " + tableName + " (term, meaning, languageID) " +
-                        "SELECT * FROM (SELECT ?, ?, ?) AS tmp WHERE NOT EXISTS " +
-                        "(SELECT * FROM  " + tableName + " WHERE term=? AND meaning=? AND languageID=?) LIMIT 1");
                 int i = 1;
-                statement.setString(i++, term.getTerm());
-                statement.setString(i++, term.getMeaning());
-                statement.setInt(i++, term.getLanguage().getId());
-                statement.setString(i++, term.getTerm());
-                statement.setString(i++, term.getMeaning());
-                statement.setInt(i++, term.getLanguage().getId());
+                insertStatement.setInt(i++, term.getId());
+                insertStatement.setString(i++, term.getTerm());
+                insertStatement.setString(i++, term.getMeaning());
+                insertStatement.setInt(i++, term.getLanguage().getId());
 
-                return successfulAction(statement.executeUpdate());
+                return successfulAction(insertStatement.executeUpdate());
             } catch (SQLException ex) {
-                ex.printStackTrace();
+                log.error(ex.getMessage(), ex);
                 return false;
-            } finally {
-                endConn(connection, resultSet, statement);
             }
         } else {
             return false;
@@ -125,19 +122,16 @@ public class TermDaoImpl implements TermDao {
     public boolean updateTerm(Term term) {
         if (term!=null) {
             try {
-                statement = connection.prepareStatement("UPDATE " + tableName + " SET term=?, meaning=?, languageID=? WHERE id=?");
                 int i = 1;
-                statement.setString(i++, term.getTerm());
-                statement.setString(i++, term.getMeaning());
-                statement.setInt(i++, term.getLanguage().getId());
-                statement.setInt(i++, term.getId());
+                updateStatement.setString(i++, term.getTerm());
+                updateStatement.setString(i++, term.getMeaning());
+                updateStatement.setInt(i++, term.getLanguage().getId());
+                updateStatement.setInt(i++, term.getId());
 
-                return successfulAction(statement.executeUpdate());
+                return successfulAction(updateStatement.executeUpdate());
             } catch (SQLException ex) {
-                ex.printStackTrace();
+                log.error(ex.getMessage(), ex);
                 return false;
-            } finally {
-                endConn(connection, resultSet, statement);
             }
         } else {
             return false;
@@ -148,16 +142,13 @@ public class TermDaoImpl implements TermDao {
     public boolean deleteTerm(Term term) {
         if (term!=null) {
             try {
-                statement = connection.prepareStatement("DELETE FROM " + tableName + " WHERE id = ?");
                 int i = 1;
-                statement.setInt(i++, term.getId());
+                deleteStatement.setInt(i++, term.getId());
 
-                return successfulAction(statement.executeUpdate());
+                return successfulAction(deleteStatement.executeUpdate());
             } catch (SQLException ex) {
-                ex.printStackTrace();
+                log.error(ex.getMessage(), ex);
                 return false;
-            } finally {
-                endConn(connection, resultSet, statement);
             }
         } else {
             return false;
@@ -170,19 +161,32 @@ public class TermDaoImpl implements TermDao {
         return result;
     }
 
-    private static void endConn(Connection connection, ResultSet resultSet, Statement statement) {
+    private static void endResultSet(ResultSet resultSet) {
         try {
-            if (null != connection) {
-                if (null != resultSet) {
-                    resultSet.close();
-                }
-                if (null != statement) {
-                    statement.close();
-                }
-//                connection.close();
+            if (null != resultSet) {
+                resultSet.close();
             }
-        } catch (SQLException sqlex) {
-            sqlex.printStackTrace();
+        } catch (SQLException ex) {
+            log.error(ex.getMessage(), ex);
+        }
+    }
+
+    public static void endStatements() {
+        endStatemnt(getAllStatement);
+        endStatemnt(getByIdstatement);
+        endStatemnt(getByTermstatement);
+        endStatemnt(insertStatement);
+        endStatemnt(updateStatement);
+        endStatemnt(deleteStatement);
+    }
+
+    private static void endStatemnt (Statement statement) {
+        try {
+            if (null != statement) {
+                statement.close();
+            }
+        } catch (SQLException ex) {
+            log.error(ex.getMessage(), ex);
         }
     }
 }

@@ -14,7 +14,7 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.when;
 import static org.testng.Assert.assertEquals;
 
-public class TestTranslationDao {
+public class TranslationDaoTest {
 
     @Mock
     private TranslationDao dao;

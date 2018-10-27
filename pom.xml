@@ -130,7 +130,7 @@
                  <configuration>
                    <excludes>
                      <exclude>**/TestDBMethods.java</exclude>
-                     <exclude>**/TestMockitoDBMethods.java</exclude>
+                     <exclude>**/MockitoDBMethodsTest.java</exclude>
                    </excludes>
                  </configuration>
                </plugin>
@@ -163,9 +163,6 @@
              <groupId>org.eluder.coveralls</groupId>
              <artifactId>coveralls-maven-plugin</artifactId>
              <version>4.3.0</version>
-             <configuration>
-                 <repoToken></repoToken>
-             </configuration>
          </plugin>        
         </plugins>
     </build>
