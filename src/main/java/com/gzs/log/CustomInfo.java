@@ -1,36 +1,34 @@
 package com.gzs.log;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
 @Slf4j
 public class CustomInfo {
 
-    enum CustomInfos {DEBUG,ERROR,INFO,TRACE,QUESTION,WARN}
-    private CustomInfos type;
+    private InfoTypes type;
     private String message;
 
     public CustomInfo(char type, String message) {
+        this.type = InfoTypes.get(type);
         this.message = message;
-        this.type = getType(type);
+        printMessage2Log();
     }
 
-    private CustomInfos getType(char type){
-        CustomInfos enumType;
-        type=Character.toLowerCase(type);
-        switch(type) {
-            case 'd' : enumType=CustomInfos.DEBUG; log.debug(this.message);  break;
-            case 'e' : enumType=CustomInfos.ERROR; log.error(this.message);  break;
-            case 'i' : enumType=CustomInfos.INFO; log.info(this.message);  break;
-            case 't' : enumType=CustomInfos.TRACE; log.trace(this.message);  break;
-            case 'q' : enumType=CustomInfos.QUESTION; log.info(this.message);  break;
-            case 'w' : enumType=CustomInfos.WARN; log.warn(this.message);  break;
-            default : enumType=CustomInfos.INFO;  log.info(this.message);
+    private void printMessage2Log (){
+        switch(this.type) {
+            case DEBUG: log.debug(this.message);  break;
+            case ERROR: log.error(this.message);  break;
+            case INFO: log.info(this.message);  break;
+            case TRACE: log.trace(this.message);  break;
+            case QUESTION: log.info(this.message);  break;
+            case WARN: log.warn(this.message);  break;
+            default: log.info(this.message);
         }
-        return enumType;
     }
 }
