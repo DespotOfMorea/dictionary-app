@@ -15,8 +15,9 @@ public class TermDaoImpl implements TermDao {
     private static DBConnector dbConnector;
     private static Connection connection;
     private static PreparedStatement getAllStatement;
-    private static PreparedStatement getByIdstatement;
-    private static PreparedStatement getByTermstatement;
+    private static PreparedStatement getByIdStatement;
+    private static PreparedStatement getByTermStatement;
+    private static PreparedStatement getByTermLangStatement;
     private static PreparedStatement insertStatement;
     private static PreparedStatement updateStatement;
     private static PreparedStatement deleteStatement;
@@ -27,8 +28,9 @@ public class TermDaoImpl implements TermDao {
         connection = dbConnector.getConn();
         try {
             getAllStatement = connection.prepareStatement("SELECT * FROM " + tableName);
-            getByIdstatement = connection.prepareStatement("SELECT * FROM " + tableName + " WHERE id = ?");
-            getByTermstatement = connection.prepareStatement("SELECT * FROM " + tableName + " WHERE term = ?");
+            getByIdStatement = connection.prepareStatement("SELECT * FROM " + tableName + " WHERE id = ?");
+            getByTermStatement = connection.prepareStatement("SELECT * FROM " + tableName + " WHERE term = ?");
+            getByTermLangStatement = connection.prepareStatement("SELECT * FROM " + tableName + " WHERE term = ? AND languageID=?");
             insertStatement = connection.prepareStatement("INSERT INTO " + tableName + " VALUES (?,?,?,?)");
             updateStatement = connection.prepareStatement("UPDATE " + tableName + " SET term=?, meaning=?, languageID=? WHERE id=?");
             deleteStatement = connection.prepareStatement("DELETE FROM " + tableName + " WHERE id = ?");
@@ -63,8 +65,8 @@ public class TermDaoImpl implements TermDao {
         Term data = new Term();
         ResultSet resultSet = null;
         try {
-            getByIdstatement.setInt(1,id);
-            resultSet = getByIdstatement.executeQuery();
+            getByIdStatement.setInt(1,id);
+            resultSet = getByIdStatement.executeQuery();
             if (resultSet.next()) {
                 String term = resultSet.getString("Term");
                 String meaning = resultSet.getString("Meaning");
@@ -84,8 +86,28 @@ public class TermDaoImpl implements TermDao {
         Term data = new Term();
         ResultSet resultSet = null;
         try {
-            getByTermstatement.setString(1,term);
-            resultSet = getByTermstatement.executeQuery();
+            getByTermStatement.setString(1,term);
+            resultSet = getByTermStatement.executeQuery();
+            if (resultSet.next()) {
+                int id = resultSet.getInt("ID");
+                String meaning = resultSet.getString("Meaning");
+                int languageID = resultSet.getInt("LanguageID");
+                data = new Term(id, term, meaning, languageID);
+            }
+        } catch (SQLException ex) {
+            log.error(ex.getMessage(), ex);
+        }
+        return data;
+    }
+
+    @Override
+    public Term getByTermLang(String term,int langId) {
+        Term data = new Term();
+        ResultSet resultSet = null;
+        try {
+            getByTermLangStatement.setString(1,term);
+            getByTermLangStatement.setInt(2,langId);
+            resultSet = getByTermLangStatement.executeQuery();
             if (resultSet.next()) {
                 int id = resultSet.getInt("ID");
                 String meaning = resultSet.getString("Meaning");
@@ -173,8 +195,8 @@ public class TermDaoImpl implements TermDao {
 
     public static void endStatements() {
         endStatemnt(getAllStatement);
-        endStatemnt(getByIdstatement);
-        endStatemnt(getByTermstatement);
+        endStatemnt(getByIdStatement);
+        endStatemnt(getByTermStatement);
         endStatemnt(insertStatement);
         endStatemnt(updateStatement);
         endStatemnt(deleteStatement);
