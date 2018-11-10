@@ -46,11 +46,7 @@ public class TranslationDaoImpl implements TranslationDao {
         try {
             resultSet = getAllStatement.executeQuery();
             while (resultSet.next()) {
-                int id = resultSet.getInt("ID");
-                int term1ID = resultSet.getInt("Term1ID");
-                int term2ID = resultSet.getInt("Term2ID");
-                int priority = resultSet.getInt("Priority");
-                data.add(new Translation(id, term1ID, term2ID, priority));
+                data.add(getTranslationFromResultSet(resultSet));
             }
         } catch (SQLException ex) {
             log.error(ex.getMessage(), ex);
@@ -68,10 +64,7 @@ public class TranslationDaoImpl implements TranslationDao {
             getByIdstatement.setInt(1, id);
             resultSet = getByIdstatement.executeQuery();
             if (resultSet.next()) {
-                int term1ID = resultSet.getInt("Term1ID");
-                int term2ID = resultSet.getInt("Term2ID");
-                int priority = resultSet.getInt("Priority");
-                data = new Translation(id, term1ID, term2ID, priority);
+                data = getTranslationFromResultSet(resultSet);
             }
         } catch (SQLException ex) {
             log.error(ex.getMessage(), ex);
@@ -89,10 +82,7 @@ public class TranslationDaoImpl implements TranslationDao {
             getByTerm1Idstatement.setInt(1, term1ID);
             resultSet = getByTerm1Idstatement.executeQuery();
             if (resultSet.next()) {
-                int id = resultSet.getInt("ID");
-                int term2ID = resultSet.getInt("Term2ID");
-                int priority = resultSet.getInt("Priority");
-                data = new Translation(id, term1ID, term2ID, priority);
+                data = getTranslationFromResultSet(resultSet);
             }
         } catch (SQLException ex) {
             log.error(ex.getMessage(), ex);
@@ -110,10 +100,7 @@ public class TranslationDaoImpl implements TranslationDao {
             getByTerm2Idstatement.setInt(1, term2ID);
             resultSet = getByTerm2Idstatement.executeQuery();
             if (resultSet.next()) {
-                int id = resultSet.getInt("ID");
-                int term1ID = resultSet.getInt("Term1ID");
-                int priority = resultSet.getInt("Priority");
-                data = new Translation(id, term1ID, term2ID, priority);
+                data = getTranslationFromResultSet(resultSet);
             }
         } catch (SQLException ex) {
             log.error(ex.getMessage(), ex);
@@ -121,6 +108,20 @@ public class TranslationDaoImpl implements TranslationDao {
             endResultSet(resultSet);
         }
         return data;
+    }
+
+    private Translation getTranslationFromResultSet(ResultSet resultSet) {
+        Translation translation = new Translation();
+        try {
+            int id = resultSet.getInt("ID");
+            int term1ID = resultSet.getInt("Term1ID");
+            int term2ID = resultSet.getInt("Term2ID");
+            int priority = resultSet.getInt("Priority");
+            translation = new Translation(id, term1ID, term2ID, priority);
+        } catch (SQLException ex) {
+            log.error(ex.getMessage(), ex);
+        }
+        return translation;
     }
 
     @Override

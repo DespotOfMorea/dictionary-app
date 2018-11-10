@@ -48,11 +48,7 @@ public class LanguageDaoImpl implements LanguageDao {
         try {
             resultSet = getAllStatement.executeQuery();
             while (resultSet.next()) {
-                int id = resultSet.getInt("ID");
-                String englishName = resultSet.getString("EnglishName");
-                String nativeName = resultSet.getString("NativeName");
-                String isoCode = resultSet.getString("IsoCode");
-                data.add(new Language(id, englishName, nativeName, isoCode));
+                data.add(getLanguageFromResultSet(resultSet));
             }
         } catch (SQLException ex) {
             log.error(ex.getMessage(), ex);
@@ -70,10 +66,7 @@ public class LanguageDaoImpl implements LanguageDao {
             getByIdStatement.setInt(1, id);
             resultSet = getByIdStatement.executeQuery();
             if (resultSet.next()) {
-                String englishName = resultSet.getString("EnglishName");
-                String nativeName = resultSet.getString("NativeName");
-                String isoCode = resultSet.getString("IsoCode");
-                data = new Language(id, englishName, nativeName, isoCode);
+                data = getLanguageFromResultSet(resultSet);
             }
         } catch (SQLException ex) {
             log.error(ex.getMessage(), ex);
@@ -91,10 +84,7 @@ public class LanguageDaoImpl implements LanguageDao {
             getByEnglishNameStatement.setString(1, englishName);
             resultSet = getByEnglishNameStatement.executeQuery();
             if (resultSet.next()) {
-                int id = resultSet.getInt("ID");
-                String nativeName = resultSet.getString("NativeName");
-                String isoCode = resultSet.getString("IsoCode");
-                data = new Language(id, englishName, nativeName, isoCode);
+                data = getLanguageFromResultSet(resultSet);
             }
         } catch (SQLException ex) {
             log.error(ex.getMessage(), ex);
@@ -112,10 +102,7 @@ public class LanguageDaoImpl implements LanguageDao {
             getByNativeNameStatement.setString(1, nativeName);
             resultSet = getByNativeNameStatement.executeQuery();
             if (resultSet.next()) {
-                int id = resultSet.getInt("ID");
-                String englishName = resultSet.getString("EnglishName");
-                String isoCode = resultSet.getString("IsoCode");
-                data = new Language(id, englishName, nativeName, isoCode);
+                data = getLanguageFromResultSet(resultSet);
             }
         } catch (SQLException ex) {
             log.error(ex.getMessage(), ex);
@@ -133,10 +120,7 @@ public class LanguageDaoImpl implements LanguageDao {
             getByIsoCodeStatement.setString(1, isoCode);
             resultSet = getByIsoCodeStatement.executeQuery();
             if (resultSet.next()) {
-                int id = resultSet.getInt("ID");
-                String englishName = resultSet.getString("EnglishName");
-                String nativeName = resultSet.getString("NativeName");
-                data = new Language(id, englishName, nativeName, isoCode);
+                data = getLanguageFromResultSet(resultSet);
             }
         } catch (SQLException ex) {
             log.error(ex.getMessage(), ex);
@@ -144,6 +128,20 @@ public class LanguageDaoImpl implements LanguageDao {
             endResultSet(resultSet);
         }
         return data;
+    }
+
+    private Language getLanguageFromResultSet(ResultSet resultSet) {
+        Language language = new Language();
+        try {
+            int id = resultSet.getInt("ID");
+            String englishName = resultSet.getString("EnglishName");
+            String nativeName = resultSet.getString("NativeName");
+            String isoCode = resultSet.getString("IsoCode");
+            language = new Language(id, englishName, nativeName, isoCode);
+        } catch (SQLException ex) {
+            log.error(ex.getMessage(), ex);
+        }
+        return language;
     }
 
     @Override

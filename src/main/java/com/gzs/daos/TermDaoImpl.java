@@ -46,11 +46,7 @@ public class TermDaoImpl implements TermDao {
         try {
             resultSet = getAllStatement.executeQuery();
             while (resultSet.next()) {
-                int id = resultSet.getInt("ID");
-                String term = resultSet.getString("Term");
-                String meaning = resultSet.getString("Meaning");
-                int languageID = resultSet.getInt("LanguageID");
-                data.add(new Term(id, term, meaning, languageID));
+                data.add(getTermFromResultSet(resultSet));
             }
         } catch (SQLException ex) {
             log.error(ex.getMessage(), ex);
@@ -68,10 +64,7 @@ public class TermDaoImpl implements TermDao {
             getByIdStatement.setInt(1,id);
             resultSet = getByIdStatement.executeQuery();
             if (resultSet.next()) {
-                String term = resultSet.getString("Term");
-                String meaning = resultSet.getString("Meaning");
-                int languageID = resultSet.getInt("LanguageID");
-                data = new Term(id, term, meaning, languageID);
+                data = getTermFromResultSet(resultSet);
             }
         } catch (SQLException ex) {
             log.error(ex.getMessage(), ex);
@@ -89,10 +82,7 @@ public class TermDaoImpl implements TermDao {
             getByTermStatement.setString(1,term);
             resultSet = getByTermStatement.executeQuery();
             if (resultSet.next()) {
-                int id = resultSet.getInt("ID");
-                String meaning = resultSet.getString("Meaning");
-                int languageID = resultSet.getInt("LanguageID");
-                data = new Term(id, term, meaning, languageID);
+                data = getTermFromResultSet(resultSet);
             }
         } catch (SQLException ex) {
             log.error(ex.getMessage(), ex);
@@ -109,15 +99,26 @@ public class TermDaoImpl implements TermDao {
             getByTermLangStatement.setInt(2,langId);
             resultSet = getByTermLangStatement.executeQuery();
             if (resultSet.next()) {
-                int id = resultSet.getInt("ID");
-                String meaning = resultSet.getString("Meaning");
-                int languageID = resultSet.getInt("LanguageID");
-                data = new Term(id, term, meaning, languageID);
+                data = getTermFromResultSet(resultSet);
             }
         } catch (SQLException ex) {
             log.error(ex.getMessage(), ex);
         }
         return data;
+    }
+
+    private Term getTermFromResultSet(ResultSet resultSet) {
+        Term returnTerm = new Term();
+        try {
+            int id = resultSet.getInt("ID");
+            String term = resultSet.getString("Term");
+            String meaning = resultSet.getString("Meaning");
+            int languageID = resultSet.getInt("LanguageID");
+            returnTerm = new Term(id, term, meaning, languageID);
+        } catch (SQLException ex) {
+            log.error(ex.getMessage(), ex);
+        }
+        return returnTerm;
     }
 
     @Override
