@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
-public class TranslationDaoImpl  implements TranslationDao {
+public class TranslationDaoImpl implements TranslationDao {
 
     private static String tableName;
     private static DBConnector dbConnector;
@@ -61,7 +61,7 @@ public class TranslationDaoImpl  implements TranslationDao {
     }
 
     @Override
-    public Translation getById(int id) {
+    public Translation get(int id) {
         Translation data = new Translation();
         ResultSet resultSet = null;
         try {
@@ -124,7 +124,7 @@ public class TranslationDaoImpl  implements TranslationDao {
     }
 
     @Override
-    public boolean insertTranslation(Translation translation) {
+    public boolean insert(Translation translation) {
         if (translation!=null) {
             try {
                 int i = 1;
@@ -144,7 +144,7 @@ public class TranslationDaoImpl  implements TranslationDao {
     }
 
     @Override
-    public boolean updateTranslation(Translation translation) {
+    public boolean update(Translation translation) {
         if (translation!=null) {
             try {
                 int i = 1;
@@ -164,7 +164,7 @@ public class TranslationDaoImpl  implements TranslationDao {
     }
 
     @Override
-    public boolean deleteTranslation(Translation translation) {
+    public boolean delete(Translation translation) {
         if (translation!=null) {
             try {
                 int i = 1;

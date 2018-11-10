@@ -61,7 +61,7 @@ public class TermDaoImpl implements TermDao {
     }
 
     @Override
-    public Term getById(int id) {
+    public Term get(int id) {
         Term data = new Term();
         ResultSet resultSet = null;
         try {
@@ -121,7 +121,7 @@ public class TermDaoImpl implements TermDao {
     }
 
     @Override
-    public boolean insertTerm(Term term) {
+    public boolean insert(Term term) {
         if (term!=null) {
             try {
                 int i = 1;
@@ -141,7 +141,7 @@ public class TermDaoImpl implements TermDao {
     }
 
     @Override
-    public boolean updateTerm(Term term) {
+    public boolean update(Term term) {
         if (term!=null) {
             try {
                 int i = 1;
@@ -161,7 +161,7 @@ public class TermDaoImpl implements TermDao {
     }
 
     @Override
-    public boolean deleteTerm(Term term) {
+    public boolean delete(Term term) {
         if (term!=null) {
             try {
                 int i = 1;

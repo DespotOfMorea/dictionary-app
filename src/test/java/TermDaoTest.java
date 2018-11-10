@@ -12,14 +12,12 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 import static org.testng.Assert.assertEquals;
 
-
 public class TermDaoTest {
 
     @Mock
     private TermDao dao;
 
     private List<Term> terms = new ArrayList<>();
-
 
     @BeforeClass
     private void setUp() {
@@ -52,12 +50,12 @@ public class TermDaoTest {
 
     @Test(dataProvider="EqualsAssertionsProviderForID")
     public void testGetById(int num, Term term) {
-        when(dao.getById(anyInt())).thenReturn(new Term());
-        when(dao.getById(terms.get(0).getId())).thenReturn(terms.get(0));
-        when(dao.getById(terms.get(1).getId())).thenReturn(terms.get(1));
-        when(dao.getById(terms.get(2).getId())).thenReturn(terms.get(2));
+        when(dao.get(anyInt())).thenReturn(new Term());
+        when(dao.get(terms.get(0).getId())).thenReturn(terms.get(0));
+        when(dao.get(terms.get(1).getId())).thenReturn(terms.get(1));
+        when(dao.get(terms.get(2).getId())).thenReturn(terms.get(2));
 
-        assertEquals(dao.getById(num), term);
+        assertEquals(dao.get(num), term);
     }
 
     @Test(dataProvider="EqualsAssertionsProviderForTerm")

@@ -26,6 +26,6 @@ public class Term {
         this.id = id;
         this.term = term;
         this.meaning = meaning;
-        this.language = languageDao.getById(languageID);
+        this.language = languageDao.get(languageID);
     }
 }

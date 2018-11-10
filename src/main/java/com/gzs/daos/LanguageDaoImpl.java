@@ -63,7 +63,7 @@ public class LanguageDaoImpl implements LanguageDao {
     }
 
     @Override
-    public Language getById(int id) {
+    public Language get(int id) {
         Language data = null;
         ResultSet resultSet = null;
         try {
@@ -147,7 +147,7 @@ public class LanguageDaoImpl implements LanguageDao {
     }
 
     @Override
-    public boolean insertLanguage(Language language) {
+    public boolean insert(Language language) {
         if (language!=null) {
             try {
                 int i = 1;
@@ -167,7 +167,7 @@ public class LanguageDaoImpl implements LanguageDao {
     }
 
     @Override
-    public boolean updateLanguage(Language language) {
+    public boolean update(Language language) {
         if (language!=null) {
             try {
                 int i = 1;
@@ -187,7 +187,7 @@ public class LanguageDaoImpl implements LanguageDao {
     }
 
     @Override
-    public boolean deleteLanguage(Language language) {
+    public boolean delete(Language language) {
         if (language!=null) {
             try {
                 int i = 1;

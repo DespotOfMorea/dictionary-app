@@ -4,12 +4,12 @@ import java.sql.*;
 
 public class DBConnector {
 
-    private static DBConnector instance;
+    private static volatile DBConnector instance;
     private static Connection connection = null;
-    private static String dbPath = "jdbc:mysql://localhost/";
-    private static String dbName = "geodictionary";
-    private static String username = "root";
-    private static String password = "";
+    private static String dbPath;
+    private static String dbName;
+    private static String username;
+    private static String password;
 
     private DBConnector(){
         connection = null;
@@ -36,15 +36,15 @@ public class DBConnector {
     }
 
 
-    private static void createConn() throws SQLException {
+    private void createConn() throws SQLException {
         connection = DriverManager.getConnection(dbPath + dbName, username, password);
     }
 
-    public static Connection getConn(){
+    public Connection getConn(){
         return connection;
     }
 
-    public static void endConn() {
+    public void endConn() {
         try {
             if (null != connection) {
                connection.close();

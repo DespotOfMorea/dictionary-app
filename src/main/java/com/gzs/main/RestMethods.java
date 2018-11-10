@@ -44,7 +44,7 @@ public class RestMethods {
             int term2ID = translationDao.getByTerm1Id(term1ID).getId();
             if (term2ID!=0){
                 term2ID = translationDao.getByTerm1Id(term1ID).getTerm2ID().getId();
-                term = termDao.getById(term2ID);
+                term = termDao.get(term2ID);
                 ObjectMapper mapper = new ObjectMapper();
                 return mapper.writeValueAsString(term);
             } else {
