@@ -6,6 +6,7 @@ import com.gzs.daos.TermDao;
 import com.gzs.daos.TermDaoImpl;
 import com.gzs.daos.TranslationDao;
 import com.gzs.daos.TranslationDaoImpl;
+import com.gzs.log.CustomInfo;
 import com.gzs.model.Term;
 
 import javax.ws.rs.*;
@@ -47,14 +48,12 @@ public class RestMethods {
                 ObjectMapper mapper = new ObjectMapper();
                 return mapper.writeValueAsString(term);
             } else {
-                term = new Term();
-                term.setTerm("There is no translation for " + termName + " in dictionary.");
-                return mapper.writeValueAsString(term);
+                CustomInfo infoMsg = new CustomInfo('i',"There is no translation for " + termName + " in dictionary.");
+                return mapper.writeValueAsString(infoMsg);
             }
         } else {
-            term = new Term();
-            term.setTerm("There is no term " + termName + " in dictionary.");
-            return mapper.writeValueAsString(term);
+            CustomInfo infoMsg = new CustomInfo('i',"There is no term " + termName + " in dictionary.");
+            return mapper.writeValueAsString(infoMsg);
         }
     }
 }
