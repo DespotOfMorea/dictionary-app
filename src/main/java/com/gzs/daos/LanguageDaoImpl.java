@@ -190,7 +190,6 @@ public class LanguageDaoImpl implements LanguageDao {
             try {
                 int i = 1;
                 deleteStatement.setInt(i++, language.getId());
-
                 return successfulAction(deleteStatement.executeUpdate());
             } catch (SQLException ex) {
                 log.error(ex.getMessage(), ex);
@@ -201,7 +200,7 @@ public class LanguageDaoImpl implements LanguageDao {
         }
     }
 
-    private boolean successfulAction(int action){
+    public static boolean successfulAction(int action){
         boolean result = true;
         if (action==0) result=false;
         return result;

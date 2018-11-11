@@ -8,6 +8,8 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.gzs.daos.LanguageDaoImpl.successfulAction;
+
 @Slf4j
 public class TranslationDaoImpl implements TranslationDao {
 
@@ -179,12 +181,6 @@ public class TranslationDaoImpl implements TranslationDao {
         } else {
             return false;
         }
-    }
-
-    private boolean successfulAction(int action){
-        boolean result = true;
-        if (action==0) result=false;
-        return result;
     }
 
     private static void endResultSet(ResultSet resultSet) {

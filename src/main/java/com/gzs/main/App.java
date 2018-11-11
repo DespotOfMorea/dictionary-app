@@ -1,5 +1,6 @@
 package com.gzs.main;
 
+import com.gzs.daos.*;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.ServletContextHandler;
@@ -19,6 +20,10 @@ public class App {
 
         log.info("Starting application");
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            LanguageDaoImpl.endStatements();
+            TermDaoImpl.endStatements();
+            TranslationDaoImpl.endStatements();
+
             dbConnector = DBConnector.getInstance();
             dbConnector.endConn();
             log.info("Application closed.");

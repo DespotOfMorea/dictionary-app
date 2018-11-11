@@ -8,6 +8,8 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.gzs.daos.LanguageDaoImpl.successfulAction;
+
 @Slf4j
 public class TermDaoImpl implements TermDao {
 
@@ -176,12 +178,6 @@ public class TermDaoImpl implements TermDao {
         } else {
             return false;
         }
-    }
-
-    private boolean successfulAction(int action){
-        boolean result = true;
-        if (action==0) result=false;
-        return result;
     }
 
     private static void endResultSet(ResultSet resultSet) {
