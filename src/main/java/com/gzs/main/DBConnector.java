@@ -1,5 +1,7 @@
 package com.gzs.main;
 
+import com.typesafe.config.Config;
+
 import java.sql.*;
 
 public class DBConnector {
@@ -13,10 +15,11 @@ public class DBConnector {
 
     private DBConnector(){
         connection = null;
-        dbPath = "jdbc:mysql://localhost/";
-        dbName = "geodictionary";
-        username = "root";
-        password = "";
+        Config fallbackConfig = App.getFallbackConfig();
+        dbPath = fallbackConfig.getString("database.path");
+        dbName = fallbackConfig.getString("database.name");
+        username = fallbackConfig.getString("database.username");
+        password = fallbackConfig.getString("database.password");
         try {
             createConn();
         } catch (SQLException e) {
