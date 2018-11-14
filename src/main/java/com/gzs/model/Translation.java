@@ -1,7 +1,5 @@
 package com.gzs.model;
 
-import com.gzs.daos.TermDao;
-import com.gzs.daos.TermDaoImpl;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
