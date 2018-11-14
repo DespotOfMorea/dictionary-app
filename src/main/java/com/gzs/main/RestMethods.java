@@ -17,13 +17,11 @@ public class RestMethods {
     private ObjectMapper mapper;
     private TermDao termDao;
     private TranslationDao translationDao;
-    private Term term;
 
     public RestMethods() {
         mapper = new ObjectMapper();
         termDao = new TermDaoImpl();
         translationDao = new TranslationDaoImpl();
-        term = null;
     }
 
     @GET
@@ -37,13 +35,13 @@ public class RestMethods {
     @Path("/get")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces(MediaType.APPLICATION_JSON)
-    public String getTerm(@QueryParam("term") String termName) throws JsonProcessingException {
-        int term1ID = termDao.getByTerm(termName).getId();
-        if (term1ID != 0) {
-            int term2ID = translationDao.getByTerm1Id(term1ID).getId();
-            if (term2ID!=0){
-                term2ID = translationDao.getByTerm1Id(term1ID).getTerm2ID().getId();
-                term = termDao.get(term2ID);
+    public String getTermsTranslation(@QueryParam("term") String termName) throws JsonProcessingException {
+        int termId = termDao.getByTerm(termName).getId();
+        if (termId != 0) {
+            int translationId = translationDao.getByTerm1Id(termId).getId();
+            if (translationId!=0){
+                int translatedTermId = translationDao.getByTerm1Id(termId).getTerm2ID().getId();
+                Term term = termDao.get(translatedTermId);
                 ObjectMapper mapper = new ObjectMapper();
                 return mapper.writeValueAsString(term);
             } else {
