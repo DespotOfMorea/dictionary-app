@@ -14,7 +14,6 @@ import javax.ws.rs.core.MediaType;
 
 @Path("/api")
 public class RestMethods {
-
     private ObjectMapper mapper;
     private TermDao termDao;
     private TranslationDao translationDao;
