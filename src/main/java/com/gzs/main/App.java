@@ -9,6 +9,9 @@ import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.jboss.resteasy.plugins.server.servlet.HttpServletDispatcher;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @Slf4j
 public class App {
 
@@ -53,12 +56,17 @@ public class App {
     }
 
     private static void loadConfig() {
+        boolean isDefaultFromFile = true;
         defaultConfig = ConfigFactory.parseResources("defaults.conf");
+        if (defaultConfig.isEmpty()) {
+            defaultConfig=loadDefaultConfig();
+            isDefaultFromFile=false;
+        }
         fallbackConfig = ConfigFactory.parseResources("overrides.conf");
 
-        if (defaultConfig.isEmpty()&&fallbackConfig.isEmpty()) {
+        if (!isDefaultFromFile&&fallbackConfig.isEmpty()) {
             log.error("Failed to load configuration files or they are empty.");
-        } else if (defaultConfig.isEmpty()) {
+        } else if (!isDefaultFromFile) {
             log.error("Failed to load default configuration.");
         } else if (fallbackConfig.isEmpty()) {
             log.error("Failed to load override configuration file.");
@@ -66,7 +74,19 @@ public class App {
             log.info("Configuration loaded successfully.");
         }
 
-        fallbackConfig.withFallback(defaultConfig).resolve();
+        fallbackConfig = ConfigFactory.parseResources("overrides.conf").withFallback(defaultConfig).resolve();
+    }
+
+    private static Config loadDefaultConfig() {
+        Map<String, Object> defaultValuesMap = new HashMap();
+        defaultValuesMap.put("connection.port", 2222);
+        defaultValuesMap.put("database.path", "jdbc:mysql://localhost/");
+        defaultValuesMap.put("database.name", "geodictionary");
+        defaultValuesMap.put("database.username", "root");
+        defaultValuesMap.put("database.password", "");
+
+        Config config = ConfigFactory.parseMap(defaultValuesMap);
+        return config;
     }
 
     public static Config getFallbackConfig() {
