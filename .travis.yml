@@ -1,2 +1,11 @@
 language: java
-script: mvn install -DskipTests=true -Dmaven.javadoc.skip=true -B -V
+
+script: mvn clean install
+env:
+  - MYSQL_HOST=127.0.0.1 MYSQL_USER=root
+services:
+  - mysql
+before_install:
+  - mysql -e 'CREATE DATABASE IF NOT EXISTS geodictionary;'
+after_success:
+  - mvn clean org.eluder.coveralls:coveralls-maven-plugin:report

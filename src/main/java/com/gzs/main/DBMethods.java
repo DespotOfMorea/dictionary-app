@@ -24,13 +24,12 @@ public class DBMethods {
     private static PreparedStatement getTermIDPrpStmt;
 
     static {
-
-        try {
+/*        try {
             createConn();
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        try {
+       try {
             getTranslatedTermIDPrpStmt = connection.prepareStatement("SELECT * FROM " + tableTranslations + " WHERE term1id = ?");
         } catch (SQLException e) {
             e.printStackTrace();
@@ -45,7 +44,7 @@ public class DBMethods {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-    }
+*/     }
 
     public static void createDB() {
         try {
@@ -59,6 +58,7 @@ public class DBMethods {
 
     public static void createTableLanguages() {
         try {
+            createConn();
             Statement st = connection.createStatement();
             int rs = st.executeUpdate("CREATE TABLE IF NOT EXISTS " + tableLanguages + " (" +
                     "ID int NOT NULL AUTO_INCREMENT, " +
@@ -74,6 +74,7 @@ public class DBMethods {
 
     public static void createTableTerms() {
         try {
+            createConn();
             Statement st = connection.createStatement();
             int rs = st.executeUpdate("CREATE TABLE IF NOT EXISTS " + tableTerms + " (" +
                     "ID int NOT NULL AUTO_INCREMENT, " +
@@ -90,6 +91,7 @@ public class DBMethods {
 
     public static void createTableTranslations() {
         try {
+            createConn();
             Statement st = connection.createStatement();
             int rs = st.executeUpdate("CREATE TABLE IF NOT EXISTS " + tableTranslations + " (" +
                     "ID int NOT NULL AUTO_INCREMENT, " +
@@ -102,76 +104,6 @@ public class DBMethods {
             st.close();
         } catch (SQLException ex) {
             ex.printStackTrace();
-        }
-    }
-
-    public static void addLanguage(Language language) {
-        try {
-            statement = connection.prepareStatement("insert into " + tableLanguages + " values(?,?,?,?)");
-            int i = 1;
-            statement.setInt(i++, language.getId());
-            statement.setString(i++, language.getEnglishName());
-            statement.setString(i++, language.getNativeName());
-            statement.setString(i++, language.getIsoCode());
-
-            statement.executeUpdate();
-        } catch (SQLException ex) {
-            ex.printStackTrace();
-        } finally {
-            endConn(connection, resultSet, statement);
-        }
-    }
-
-    public static Language getLanguageByID(int id) {
-        Language data = new Language();
-        try {
-            statement = connection.prepareStatement("SELECT * FROM " + tableLanguages + " WHERE id = ?");
-            statement.setInt(1, id);
-            resultSet = statement.executeQuery();
-            resultSet.next();
-                String englishName = resultSet.getString("EnglishName");
-                String nativeName = resultSet.getString("NativeName");
-                String isoCode = resultSet.getString("IsoCode");
-                data = new Language(id, englishName, nativeName, isoCode);
-        } catch (SQLException sqlex) {
-            sqlex.printStackTrace();
-        } finally {
-            endConn(connection, resultSet, statement);
-        }
-        return data;
-    }
-
-    public static void addTerm(Term term) {
-        try {
-            statement = connection.prepareStatement("insert into " + tableTerms + " values(?,?,?,?)");
-            int i = 1;
-            statement.setInt(i++, term.getId());
-            statement.setString(i++, term.getTerm());
-            statement.setString(i++, term.getMeaning());
-            statement.setInt(i++, term.getLanguage().getId());
-
-            statement.executeUpdate();
-        } catch (SQLException ex) {
-            ex.printStackTrace();
-        } finally {
-            endConn(connection, resultSet, statement);
-        }
-    }
-
-    public static void addTranslation(Translation translation) {
-        try {
-            statement = connection.prepareStatement("insert into " + tableTranslations + " values(?,?,?,?)");
-            int i = 1;
-            statement.setInt(i++, translation.getId());
-            statement.setInt(i++, translation.getTerm1ID().getId());
-            statement.setInt(i++, translation.getTerm2ID().getId());
-            statement.setInt(i++, translation.getPriority());
-
-            statement.executeUpdate();
-        } catch (SQLException ex) {
-            ex.printStackTrace();
-        } finally {
-            endConn(connection, resultSet, statement);
         }
     }
 
@@ -189,52 +121,6 @@ public class DBMethods {
             endConn(connection, resultSet, getTermIDPrpStmt);
         }
         return id;
-    }
-
-    public static Term getTermByID(int id) {
-        Term data = new Term();
-        try {
-            getTermByIDPrpStmt.setInt(1, id);
-            resultSet = getTermByIDPrpStmt.executeQuery();
-            resultSet.next();
-            String term = resultSet.getString("Term");
-            String meaning = resultSet.getString("Meaning");
-            int languageID = resultSet.getInt("LanguageID");
-            data = new Term(id, term, meaning, languageID);
-        } catch (SQLException sqlex) {
-            sqlex.printStackTrace();
-        } finally {
-            endConn(connection, resultSet, getTermByIDPrpStmt);
-        }
-        return data;
-    }
-
-    public static int getTranslatedTermID(int term1ID) {
-        int id = 0;
-        try {
-            getTranslatedTermIDPrpStmt.setInt(1,term1ID);
-            resultSet = getTranslatedTermIDPrpStmt.executeQuery();
-            while (resultSet.next()) {
-                if (resultSet.getInt("Priority")==1){
-                    id = resultSet.getInt("Term2ID");
-                }
-            }
-        } catch (SQLException sqlex) {
-            sqlex.printStackTrace();
-        } finally {
-            endConn(connection, resultSet, getTranslatedTermIDPrpStmt);
-        }
-        return id;
-    }
-
-    private static void testConn() {
-        try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-        } catch (ClassNotFoundException e) {
-            System.out.println("Problem in loading or "
-                    + "registering Oracle JDBC driver");
-            e.printStackTrace();
-        }
     }
 
     private static void createConn() throws SQLException {
