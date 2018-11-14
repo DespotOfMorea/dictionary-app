@@ -1,6 +1,7 @@
 package com.gzs.daos;
 
 import com.gzs.main.DBConnector;
+import com.gzs.main.NoConnectionException;
 import lombok.extern.slf4j.Slf4j;
 
 import java.sql.*;

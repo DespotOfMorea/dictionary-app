@@ -1,7 +1,5 @@
 package com.gzs.model;
 
-import com.gzs.daos.LanguageDao;
-import com.gzs.daos.LanguageDaoImpl;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

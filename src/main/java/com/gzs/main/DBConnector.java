@@ -11,20 +11,20 @@ public class DBConnector {
     private static String username;
     private static String password;
 
-    private DBConnector(){
+    private DBConnector() {
         connection = null;
         dbPath = "jdbc:mysql://localhost/";
         dbName = "geodictionary";
         username = "root";
         password = "";
         try {
-            createConn();
+            connection = DriverManager.getConnection(dbPath + dbName, username, password);
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new NoConnectionException(e);
         }
     }
 
-    public static synchronized DBConnector getInstance(){
+    public static synchronized DBConnector getInstance() {
         if(instance == null){
             synchronized (DBConnector.class) {
                 if(instance == null){
@@ -33,11 +33,6 @@ public class DBConnector {
             }
         }
         return instance;
-    }
-
-
-    private void createConn() throws SQLException {
-        connection = DriverManager.getConnection(dbPath + dbName, username, password);
     }
 
     public Connection getConn(){
