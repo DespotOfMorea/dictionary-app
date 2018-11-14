@@ -9,28 +9,26 @@ import java.util.List;
 
 @Slf4j
 public abstract class DatabaseDao {
-    protected static String tableName;
+
     protected static DBConnector dbConnector;
     protected static Connection connection;
-    protected static List<Statement> statements;
-    protected static PreparedStatement getAllStatement;
-    protected static PreparedStatement getByIdStatement;
-    protected static PreparedStatement insertStatement;
-    protected static PreparedStatement updateStatement;
-    protected static PreparedStatement deleteStatement;
 
     static {
         dbConnector = DBConnector.getInstance();
         connection = dbConnector.getConn();
-        statements = new ArrayList<>();
-        statements.add(getAllStatement);
-        statements.add(getByIdStatement);
-        statements.add(insertStatement);
-        statements.add(updateStatement);
-        statements.add(deleteStatement);
     }
 
-    public <T> List<T> getAllFromDatabase() {
+    protected static void endStatement(Statement statement) {
+        try {
+            if (null != statement) {
+                statement.close();
+            }
+        } catch (SQLException ex) {
+            log.error(ex.getMessage(), ex);
+        }
+    }
+
+    public <T> List<T> getAllFromDatabase(PreparedStatement getAllStatement) {
         List<T> data = new ArrayList<>();
         ResultSet resultSet = null;
         try {
@@ -46,11 +44,11 @@ public abstract class DatabaseDao {
         return data;
     }
 
-    protected <T> T getFromResultSet (ResultSet resultSet){
+    protected <T> T getFromResultSet(ResultSet resultSet) {
         return null;
     }
 
-    protected <T> T getterFromInt(PreparedStatement statement,int num) {
+    protected <T> T getterFromInt(PreparedStatement statement, int num) {
         T data = null;
         ResultSet resultSet = null;
         try {
@@ -67,7 +65,7 @@ public abstract class DatabaseDao {
         return data;
     }
 
-    protected <T> T getterFromString(PreparedStatement statement,String s) {
+    protected <T> T getterFromString(PreparedStatement statement, String s) {
         T data = null;
         ResultSet resultSet = null;
         try {
@@ -84,20 +82,27 @@ public abstract class DatabaseDao {
         return data;
     }
 
-    protected boolean deleteFromDatabase(int id) {
-            try {
-                int i = 1;
-                deleteStatement.setInt(i++, id);
-                return successfulAction(deleteStatement.executeUpdate());
-            } catch (SQLException ex) {
-                log.error(ex.getMessage(), ex);
-                return false;
-            }
+    protected <T> T nullCheck(T t, T newT) {
+        if (t == null) {
+            t = newT;
+        }
+        return t;
     }
 
-    protected boolean successfulAction(int action){
+    protected boolean deleteFromDatabase(PreparedStatement deleteStatement, int id) {
+        try {
+            int i = 1;
+            deleteStatement.setInt(i++, id);
+            return successfulAction(deleteStatement.executeUpdate());
+        } catch (SQLException ex) {
+            log.error(ex.getMessage(), ex);
+            return false;
+        }
+    }
+
+    protected boolean successfulAction(int action) {
         boolean result = true;
-        if (action==0) result=false;
+        if (action == 0) result = false;
         return result;
     }
 
@@ -109,19 +114,5 @@ public abstract class DatabaseDao {
         } catch (SQLException ex) {
             log.error(ex.getMessage(), ex);
         }
-    }
-
-    protected void endStatement(Statement statement) {
-        try {
-            if (null != statement) {
-                statement.close();
-            }
-        } catch (SQLException ex) {
-            log.error(ex.getMessage(), ex);
-        }
-    }
-
-    protected void endStatements() {
-        statements.forEach(statement -> endStatement(statement));
     }
 }
