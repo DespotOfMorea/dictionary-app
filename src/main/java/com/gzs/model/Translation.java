@@ -22,10 +22,9 @@ public class Translation {
     }
 
     public Translation(int id, int term1ID, int term2ID, int priority) {
-        TermDao termDao = new TermDaoImpl();
         this.id = id;
-        this.term1ID = termDao.get(term1ID);
-        this.term2ID = termDao.get(term2ID);
+    //    this.term1ID = termDao.get(term1ID);
+    //    this.term2ID = termDao.get(term2ID);
         this.priority = priority;
     }
 }

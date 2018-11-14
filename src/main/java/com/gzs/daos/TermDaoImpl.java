@@ -6,16 +6,23 @@ import lombok.extern.slf4j.Slf4j;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
 public class TermDaoImpl extends DatabaseDao implements TermDao {
 
+    private static List<PreparedStatement> statements;
+    private static PreparedStatement getAllStatement;
+    private static PreparedStatement getByIdStatement;
     private static PreparedStatement getByTermStatement;
     private static PreparedStatement getByTermLangStatement;
+    private static PreparedStatement insertStatement;
+    private static PreparedStatement updateStatement;
+    private static PreparedStatement deleteStatement;
 
     static {
-        tableName = "terms";
+        String tableName = "terms";
         try {
             getAllStatement = connection.prepareStatement("SELECT * FROM " + tableName);
             getByIdStatement = connection.prepareStatement("SELECT * FROM " + tableName + " WHERE id = ?");
@@ -24,8 +31,14 @@ public class TermDaoImpl extends DatabaseDao implements TermDao {
             insertStatement = connection.prepareStatement("INSERT INTO " + tableName + " VALUES (?,?,?,?)");
             updateStatement = connection.prepareStatement("UPDATE " + tableName + " SET term=?, meaning=?, languageID=? WHERE id=?");
             deleteStatement = connection.prepareStatement("DELETE FROM " + tableName + " WHERE id = ?");
-            statements.add(getByTermLangStatement);
+            statements = new ArrayList<>();
+            statements.add(getAllStatement);
+            statements.add(getByIdStatement);
             statements.add(getByTermStatement);
+            statements.add(getByTermLangStatement);
+            statements.add(insertStatement);
+            statements.add(updateStatement);
+            statements.add(deleteStatement);
         } catch (SQLException ex) {
             log.error(ex.getMessage(), ex);
         }
@@ -33,19 +46,19 @@ public class TermDaoImpl extends DatabaseDao implements TermDao {
 
     @Override
     public List<Term> getAll() {
-        return getAllFromDatabase();
+        return getAllFromDatabase(getAllStatement);
     }
 
     @Override
     public Term get(int id) {
         Term data = getterFromInt(getByIdStatement,id);
-        return nullCheck(data);
+        return nullCheck(data,new Term());
     }
 
     @Override
     public Term getByTerm(String term) {
         Term data = getterFromString(getByTermStatement,term);
-        return nullCheck(data);
+        return nullCheck(data,new Term());
     }
 
     @Override
@@ -65,21 +78,16 @@ public class TermDaoImpl extends DatabaseDao implements TermDao {
         return data;
     }
 
-    private Term nullCheck(Term term){
-        if (term==null){
-            term = new Term();
-        }
-        return term;
-    }
-
+    @Override
     protected Term getFromResultSet(ResultSet resultSet) {
         Term returnTerm = new Term();
+        LanguageDao languageDao = new LanguageDaoImpl();
         try {
             int id = resultSet.getInt("ID");
             String term = resultSet.getString("Term");
             String meaning = resultSet.getString("Meaning");
             int languageID = resultSet.getInt("LanguageID");
-            returnTerm = new Term(id, term, meaning, languageID);
+            returnTerm = new Term(id, term, meaning, languageDao.get(languageID));
         } catch (SQLException ex) {
             log.error(ex.getMessage(), ex);
         }
@@ -129,10 +137,13 @@ public class TermDaoImpl extends DatabaseDao implements TermDao {
     @Override
     public boolean delete(Term term) {
         if (term!=null) {
-            return deleteFromDatabase(term.getId());
+            return deleteFromDatabase(deleteStatement, term.getId());
         } else {
             return false;
         }
     }
 
+    public static void endStatements() {
+        statements.forEach(statement -> endStatement(statement));
+    }
 }
