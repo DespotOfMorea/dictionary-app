@@ -8,4 +8,4 @@ services:
 before_install:
   - mysql -e 'CREATE DATABASE IF NOT EXISTS geodictionary;'
 after_success:
-  - mvn clean org.eluder.coveralls:coveralls-maven-plugin:report
+  - mvn clean cobertura:cobertura coveralls:report
