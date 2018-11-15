@@ -1,5 +1,6 @@
-package com.gzs.daos;
+package com.gzs.daos.mysql;
 
+import com.gzs.daos.LanguageDao;
 import com.gzs.main.DBConnector;
 import com.gzs.model.Language;
 import lombok.extern.slf4j.Slf4j;
@@ -9,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
-public class LanguageDaoImpl implements LanguageDao {
+public class LanguageDaoMySQLImpl implements LanguageDao {
 
     private static String tableName;
     private static DBConnector dbConnector;

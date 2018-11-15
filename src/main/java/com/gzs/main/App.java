@@ -1,6 +1,7 @@
 package com.gzs.main;
 
 import com.gzs.daos.*;
+import com.gzs.data.DataInMemoryCache;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.ServletContextHandler;
@@ -19,10 +20,14 @@ public class App {
 //        generateDBData();
 
         log.info("Starting application");
+
+        DataInMemoryCache dataCache = DataInMemoryCache.getInstance();
+        dataCache.createTestData();
+
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-            LanguageDaoImpl.endStatements();
-            TermDaoImpl.endStatements();
-            TranslationDaoImpl.endStatements();
+//            LanguageDaoImpl.endStatements();
+//            TermDaoImpl.endStatements();
+//            TranslationDaoImpl.endStatements();
 
             dbConnector = DBConnector.getInstance();
             dbConnector.endConn();

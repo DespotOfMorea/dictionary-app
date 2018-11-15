@@ -1,7 +1,7 @@
 package com.gzs.model;
 
 import com.gzs.daos.TermDao;
-import com.gzs.daos.TermDaoImpl;
+import com.gzs.daos.mysql.TermDaoMySQLImpl;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -22,7 +22,7 @@ public class Translation {
     }
 
     public Translation(int id, int term1ID, int term2ID, int priority) {
-        TermDao termDao = new TermDaoImpl();
+        TermDao termDao = new TermDaoMySQLImpl();
         this.id = id;
         this.term1ID = termDao.get(term1ID);
         this.term2ID = termDao.get(term2ID);
