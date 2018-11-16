@@ -20,6 +20,7 @@ public class TermDaoImpl extends DatabaseDao implements TermDao {
     private static PreparedStatement insertStatement;
     private static PreparedStatement updateStatement;
     private static PreparedStatement deleteStatement;
+    private static PreparedStatement getTermsTranslationStatement;
 
     static {
         String tableName = "terms";
@@ -31,6 +32,11 @@ public class TermDaoImpl extends DatabaseDao implements TermDao {
             insertStatement = connection.prepareStatement("INSERT INTO " + tableName + " VALUES (?,?,?,?)");
             updateStatement = connection.prepareStatement("UPDATE " + tableName + " SET term=?, meaning=?, languageID=? WHERE id=?");
             deleteStatement = connection.prepareStatement("DELETE FROM " + tableName + " WHERE id = ?");
+
+            getTermsTranslationStatement = connection.prepareStatement("SELECT * FROM terms WHERE id IN " +
+                    "(SELECT Term2ID FROM translations WHERE Term1ID IN " +
+                    "(SELECT id FROM terms WHERE term = ?))");
+
             statements = new ArrayList<>();
             statements.add(getAllStatement);
             statements.add(getByIdStatement);
@@ -39,6 +45,7 @@ public class TermDaoImpl extends DatabaseDao implements TermDao {
             statements.add(insertStatement);
             statements.add(updateStatement);
             statements.add(deleteStatement);
+            statements.add(getTermsTranslationStatement);
         } catch (SQLException ex) {
             log.error(ex.getMessage(), ex);
         }
@@ -52,13 +59,13 @@ public class TermDaoImpl extends DatabaseDao implements TermDao {
     @Override
     public Term get(int id) {
         Term data = getterFromInt(getByIdStatement,id);
-        return nullCheck(data,new Term());
+        return super.nullCheck(data).orElse(new Term());
     }
 
     @Override
     public Term getByTerm(String term) {
         Term data = getterFromString(getByTermStatement,term);
-        return nullCheck(data,new Term());
+        return super.nullCheck(data).orElse(new Term());
     }
 
     @Override
@@ -104,7 +111,7 @@ public class TermDaoImpl extends DatabaseDao implements TermDao {
                 insertStatement.setString(i++, term.getMeaning());
                 insertStatement.setInt(i++, term.getLanguage().getId());
 
-                return successfulAction(insertStatement.executeUpdate());
+                return insertStatement.executeUpdate()==1;
             } catch (SQLException ex) {
                 log.error(ex.getMessage(), ex);
                 return false;
@@ -124,7 +131,7 @@ public class TermDaoImpl extends DatabaseDao implements TermDao {
                 updateStatement.setInt(i++, term.getLanguage().getId());
                 updateStatement.setInt(i++, term.getId());
 
-                return successfulAction(updateStatement.executeUpdate());
+                return updateStatement.executeUpdate()==1;
             } catch (SQLException ex) {
                 log.error(ex.getMessage(), ex);
                 return false;
@@ -139,11 +146,18 @@ public class TermDaoImpl extends DatabaseDao implements TermDao {
         if (term!=null) {
             return deleteFromDatabase(deleteStatement, term.getId());
         } else {
+            log.warn("User tried to delete Term with null value from data.");
             return false;
         }
     }
 
     public static void endStatements() {
         statements.forEach(statement -> endStatement(statement));
+    }
+
+    @Override
+    public Term getTermsTranslation(String term) {
+        Term data = getterFromString(getTermsTranslationStatement,term);
+        return super.nullCheck(data).orElse(new Term());
     }
 }

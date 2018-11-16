@@ -55,25 +55,25 @@ public class LanguageDaoImpl extends DatabaseDao implements LanguageDao {
     @Override
     public Language get(int id) {
         Language data = getterFromInt(getByIdStatement,id);
-        return nullCheck(data,new Language());
+        return super.nullCheck(data).orElse(new Language());
     }
 
     @Override
     public Language getByEnglishName(String englishName) {
         Language data = getterFromString(getByEnglishNameStatement,englishName);
-        return nullCheck(data,new Language());
+        return super.nullCheck(data).orElse(new Language());
     }
 
     @Override
     public Language getByNativeName(String nativeName) {
         Language data = getterFromString(getByNativeNameStatement,nativeName);
-        return nullCheck(data,new Language());
+        return super.nullCheck(data).orElse(new Language());
     }
 
     @Override
     public Language getByIsoCode(String isoCode) {
         Language data = getterFromString(getByIsoCodeStatement,isoCode);
-        return nullCheck(data,new Language());
+        return super.nullCheck(data).orElse(new Language());
     }
 
     @Override
@@ -101,7 +101,7 @@ public class LanguageDaoImpl extends DatabaseDao implements LanguageDao {
                 insertStatement.setString(i++, language.getNativeName());
                 insertStatement.setString(i++, language.getIsoCode());
 
-                return successfulAction(insertStatement.executeUpdate());
+                return insertStatement.executeUpdate()==1;
             } catch (SQLException ex) {
                 log.error(ex.getMessage(), ex);
                 return false;
@@ -121,7 +121,7 @@ public class LanguageDaoImpl extends DatabaseDao implements LanguageDao {
                 updateStatement.setString(i++, language.getIsoCode());
                 updateStatement.setInt(i++, language.getId());
 
-                return successfulAction(updateStatement.executeUpdate());
+                return updateStatement.executeUpdate()==1;
             } catch (SQLException ex) {
                 log.error(ex.getMessage(), ex);
                 return false;
@@ -136,6 +136,7 @@ public class LanguageDaoImpl extends DatabaseDao implements LanguageDao {
         if (language!=null) {
             return deleteFromDatabase(deleteStatement, language.getId());
         } else {
+            log.warn("User tried to delete Language with null value from data.");
             return false;
         }
     }
