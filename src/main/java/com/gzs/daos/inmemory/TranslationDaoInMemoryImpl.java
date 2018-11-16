@@ -54,12 +54,7 @@ public class TranslationDaoInMemoryImpl extends InMemoryDao implements Translati
     @Override
     public boolean insert(Translation translation) {
         if (translation != null) {
-            if (!dataCache.getTranslations().containsKey(translation.getId())) {
-                dataCache.addTranslation(translation);
-                return true;
-            } else {
-                return false;
-            }
+            return dataCache.insertTranslation(translation);
         } else {
             return false;
         }
@@ -68,12 +63,7 @@ public class TranslationDaoInMemoryImpl extends InMemoryDao implements Translati
     @Override
     public boolean update(Translation translation) {
         if (translation != null) {
-            if (dataCache.getTranslations().containsKey(translation.getId())) {
-                dataCache.updateTranslation(translation);
-                return true;
-            } else {
-                return false;
-            }
+            return dataCache.updateTranslation(translation);
         } else {
             return false;
         }
@@ -82,12 +72,7 @@ public class TranslationDaoInMemoryImpl extends InMemoryDao implements Translati
     @Override
     public boolean delete(Translation translation) {
         if (translation != null) {
-            if (dataCache.getTranslations().containsKey(translation.getId())) {
-                dataCache.removeTranslation(translation);
-                return true;
-            } else {
-                return false;
-            }
+            return dataCache.deleteTranslation(translation);
         } else {
             return false;
         }

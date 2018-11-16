@@ -15,7 +15,6 @@ public class TermDaoInMemoryImpl extends InMemoryDao implements TermDao {
         dataCache = DataInMemoryCache.getInstance();
     }
 
-
     @Override
     public List<Term> getAll() {
         return getAllFromMap(dataCache.getTerms());
@@ -25,7 +24,6 @@ public class TermDaoInMemoryImpl extends InMemoryDao implements TermDao {
     public Term get(int id) {
         return dataCache.getTerm(id);
     }
-
 
     @Override
     public Term getByTerm(String term) {
@@ -47,12 +45,7 @@ public class TermDaoInMemoryImpl extends InMemoryDao implements TermDao {
     @Override
     public boolean insert(Term term) {
         if (term != null) {
-            if (!dataCache.getTerms().containsKey(term.getId())) {
-                dataCache.addTerm(term);
-                return true;
-            } else {
-                return false;
-            }
+            return dataCache.insertTerm(term);
         } else {
             return false;
         }
@@ -61,12 +54,7 @@ public class TermDaoInMemoryImpl extends InMemoryDao implements TermDao {
     @Override
     public boolean update(Term term) {
         if (term != null) {
-            if (dataCache.getTerms().containsKey(term.getId())) {
-                dataCache.updateTerm(term);
-                return true;
-            } else {
-                return false;
-            }
+            return dataCache.updateTerm(term);
         } else {
             return false;
         }
@@ -75,12 +63,7 @@ public class TermDaoInMemoryImpl extends InMemoryDao implements TermDao {
     @Override
     public boolean delete(Term term) {
         if (term != null) {
-            if (dataCache.getTerms().containsKey(term.getId())) {
-                dataCache.removeTerm(term);
-                return true;
-            } else {
-                return false;
-            }
+            return dataCache.deleteTerm(term);
         } else {
             return false;
         }

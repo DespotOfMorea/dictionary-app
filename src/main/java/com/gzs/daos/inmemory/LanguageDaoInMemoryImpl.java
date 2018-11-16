@@ -64,12 +64,7 @@ public class LanguageDaoInMemoryImpl extends InMemoryDao implements LanguageDao 
     @Override
     public boolean insert(Language language) {
         if (language != null) {
-            if (!dataCache.getLanguages().containsKey(language.getId())) {
-                dataCache.addLanguage(language);
-                return true;
-            } else {
-                return false;
-            }
+            return dataCache.insertLanguage(language);
         } else {
             return false;
         }
@@ -78,12 +73,7 @@ public class LanguageDaoInMemoryImpl extends InMemoryDao implements LanguageDao 
     @Override
     public boolean update(Language language) {
         if (language != null) {
-            if (dataCache.getLanguages().containsKey(language.getId())) {
-                dataCache.updateLanguage(language);
-                return true;
-            } else {
-                return false;
-            }
+            return dataCache.updateLanguage(language);
         } else {
             return false;
         }
@@ -92,12 +82,7 @@ public class LanguageDaoInMemoryImpl extends InMemoryDao implements LanguageDao 
     @Override
     public boolean delete(Language language) {
         if (language != null) {
-            if (dataCache.getLanguages().containsKey(language.getId())) {
-                dataCache.removeLanguage(language);
-                return true;
-            } else {
-                return false;
-            }
+            return dataCache.deleteLanguage(language);
         } else {
             return false;
         }

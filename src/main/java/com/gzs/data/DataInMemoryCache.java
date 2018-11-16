@@ -10,10 +10,8 @@ import com.gzs.model.Language;
 import com.gzs.model.Term;
 import com.gzs.model.Translation;
 
-import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.BiConsumer;
 
 public class DataInMemoryCache {
 
@@ -39,11 +37,11 @@ public class DataInMemoryCache {
         return instance;
     }
 
-    public static Map<Integer, Language> getLanguages() {
+    public Map<Integer, Language> getLanguages() {
         return languages;
     }
 
-    public static Language getLanguage(int id) {
+    public Language getLanguage(int id) {
         Language language = new Language();
         if (languages.containsKey(id)) {
             language = languages.get(id);
@@ -51,20 +49,20 @@ public class DataInMemoryCache {
         return language;
     }
 
-    public static void setLanguages(Map<Integer, Language> languages) {
+    public void setLanguages(Map<Integer, Language> languages) {
         DataInMemoryCache.languages = languages;
     }
 
-    public static void addLanguage(Language language) {
-        DataInMemoryCache.languages.put(language.getId(), language);
+    public boolean insertLanguage(Language language) {
+        return insert(DataInMemoryCache.languages,language,language.getId());
     }
 
-    public void updateLanguage(Language language) {
-        DataInMemoryCache.languages.replace(language.getId(), language);
+    public boolean updateLanguage(Language language) {
+        return update(DataInMemoryCache.languages,language,language.getId());
     }
 
-    public void removeLanguage(Language language) {
-        DataInMemoryCache.languages.remove(language.getId(), language);
+    public boolean deleteLanguage(Language language) {
+        return delete(DataInMemoryCache.languages,language.getId());
     }
 
     public static Map<Integer, Term> getTerms() {
@@ -83,16 +81,16 @@ public class DataInMemoryCache {
         DataInMemoryCache.terms = terms;
     }
 
-    public static void addTerm(Term term) {
-        DataInMemoryCache.terms.put(term.getId(), term);
+    public boolean insertTerm(Term term) {
+        return insert(DataInMemoryCache.terms,term,term.getId());
     }
 
-    public void updateTerm(Term term) {
-        DataInMemoryCache.terms.replace(term.getId(), term);
+    public boolean updateTerm(Term term) {
+        return update(DataInMemoryCache.terms,term,term.getId());
     }
 
-    public void removeTerm(Term term) {
-        DataInMemoryCache.terms.remove(term.getId(), term);
+    public boolean deleteTerm(Term term) {
+        return delete(DataInMemoryCache.terms,term.getId());
     }
 
     public static Map<Integer, Translation> getTranslations() {
@@ -111,80 +109,44 @@ public class DataInMemoryCache {
         DataInMemoryCache.translations = translations;
     }
 
-    public static void addTranslation(Translation translation) {
-        DataInMemoryCache.translations.put(translation.getId(), translation);
+    public boolean insertTranslation(Translation translation) {
+        return insert(DataInMemoryCache.translations,translation,translation.getId());
     }
 
-    public void updateTranslation(Translation translation) {
-        DataInMemoryCache.translations.replace(translation.getId(), translation);
+    public boolean updateTranslation(Translation translation) {
+        return update(DataInMemoryCache.translations,translation,translation.getId());
     }
 
-    public void removeTranslation(Translation translation)  {
-        DataInMemoryCache.translations.remove(translation.getId(), translation);
+    public boolean deleteTranslation(Translation translation) {
+        return delete(DataInMemoryCache.translations,translation.getId());
     }
 
-
-
-
-
-
-
-
-
-
-
-
-    public <T> Language getByAttribute(String attribute, T attributeValue){
-        Language language = new Language();
-        DataInMemoryCache.languages.forEach((key,value) -> {
-
-
-
-            Class aClass = Language.class;
-            Field field = null;
-            try {
-                field = aClass.getField(attribute);
-            } catch (NoSuchFieldException e) {
-                e.printStackTrace();
-            }
-
-            try {
-                if (field.get(value)==attributeValue) {
-//                    language=value;
-                }
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
-            }
-
-        });
-        return language;
+    private <T> boolean insert (Map<Integer,T> map, T t, int id) {
+        if (!map.containsKey(id)) {
+            map.put(id, t);
+            return true;
+        } else {
+            return false;
+        }
     }
 
-
-
-    public boolean hasLanguageValue (Language language) {
-        return hasValue(language.getId(),DataInMemoryCache.languages);
+    private <T> boolean update (Map<Integer,T> map, T t, int id) {
+        if (map.containsKey(id)) {
+            map.replace(id, t);
+            return true;
+        } else {
+            return false;
+        }
     }
 
-    public boolean hasTermValue (Term term) {
-        return hasValue(term.getId(),DataInMemoryCache.terms);
+    private <T> boolean delete (Map<Integer,T> map, int id) {
+        if (map.containsKey(id)) {
+            map.remove(id);
+            return true;
+        } else {
+            return false;
+        }
     }
-
-    public boolean hastTanslationValue (Translation translation) {
-        return hasValue(translation.getId(),DataInMemoryCache.translations);
-    }
-
-    private <T> boolean hasValue(int id, Map<Integer, T> map){
-            if (!map.containsKey(id)) {
-                return true;
-            } else {
-                return false;
-            }
-    }
-
-
-
-
 
     public static void createTestData() {
         LanguageDao languageDao = new LanguageDaoInMemoryImpl();
@@ -241,7 +203,7 @@ public class DataInMemoryCache {
         translationDao.insert(new Translation(1, term1, term10, 1));
         translationDao.insert(new Translation(2, term2, term11, 1));
         translationDao.insert(new Translation(3, term3, term12, 1));
-        translationDao.insert(new Translation(4, term4, term12, 1));//
+        translationDao.insert(new Translation(4, term4, term12, 1));
         translationDao.insert(new Translation(5, term5, term13, 1));
         translationDao.insert(new Translation(6, term6, term14, 1));
         translationDao.insert(new Translation(7, term7, term15, 1));
