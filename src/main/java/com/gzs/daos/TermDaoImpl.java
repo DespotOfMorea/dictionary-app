@@ -8,6 +8,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.function.Supplier;
 
 @Slf4j
 public class TermDaoImpl extends DatabaseDao implements TermDao {
@@ -59,13 +61,13 @@ public class TermDaoImpl extends DatabaseDao implements TermDao {
     @Override
     public Term get(int id) {
         Term data = getterFromInt(getByIdStatement,id);
-        return super.nullCheck(data).orElse(new Term());
+        return nullCheck(data).orElse(new Term());
     }
 
     @Override
     public Term getByTerm(String term) {
         Term data = getterFromString(getByTermStatement,term);
-        return super.nullCheck(data).orElse(new Term());
+        return nullCheck(data).orElse(new Term());
     }
 
     @Override

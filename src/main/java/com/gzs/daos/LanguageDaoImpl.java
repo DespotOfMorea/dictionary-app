@@ -55,25 +55,25 @@ public class LanguageDaoImpl extends DatabaseDao implements LanguageDao {
     @Override
     public Language get(int id) {
         Language data = getterFromInt(getByIdStatement,id);
-        return super.nullCheck(data).orElse(new Language());
+        return nullCheck(data).orElse(new Language());
     }
 
     @Override
     public Language getByEnglishName(String englishName) {
         Language data = getterFromString(getByEnglishNameStatement,englishName);
-        return super.nullCheck(data).orElse(new Language());
+        return nullCheck(data).orElse(new Language());
     }
 
     @Override
     public Language getByNativeName(String nativeName) {
         Language data = getterFromString(getByNativeNameStatement,nativeName);
-        return super.nullCheck(data).orElse(new Language());
+        return nullCheck(data).orElse(new Language());
     }
 
     @Override
     public Language getByIsoCode(String isoCode) {
         Language data = getterFromString(getByIsoCodeStatement,isoCode);
-        return super.nullCheck(data).orElse(new Language());
+        return nullCheck(data).orElse(new Language());
     }
 
     @Override
