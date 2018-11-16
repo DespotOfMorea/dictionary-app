@@ -20,12 +20,17 @@ public class App {
 
         log.info("Starting application");
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            log.info("Starting application shutdown process.");
             LanguageDaoImpl.endStatements();
+            log.info("LanguageDao statements closed.Starting TermDao statements closing...");
             TermDaoImpl.endStatements();
+            log.info("TermDao statements closed.Starting TranslationDao statements closing...");
             TranslationDaoImpl.endStatements();
+            log.info("TranslationDao statements closed.Starting connection closing...");
 
             dbConnector = DBConnector.getInstance();
             dbConnector.endConn();
+            log.info("Connection is closed.");
             log.info("Application closed.");
         }));
       

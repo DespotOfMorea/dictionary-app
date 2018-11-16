@@ -82,7 +82,7 @@ public abstract class DatabaseDao {
     }
 
     protected <T> Optional<T> nullCheck(T t) {
-        return Optional.of(t);
+        return Optional.ofNullable(t);
     }
 
     protected boolean deleteFromDatabase(PreparedStatement deleteStatement, int id) {
