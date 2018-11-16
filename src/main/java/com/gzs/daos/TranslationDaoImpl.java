@@ -52,19 +52,19 @@ public class TranslationDaoImpl extends DatabaseDao implements TranslationDao  {
     @Override
     public Translation get(int id) {
         Translation data = getterFromInt(getByIdStatement,id);
-        return nullCheck(data,new Translation());
+        return super.nullCheck(data).orElse(new Translation());
     }
 
     @Override
     public Translation getByTerm1Id(int term1ID) {
         Translation data = getterFromInt(getByTerm1IdStatement,term1ID);
-        return nullCheck(data,new Translation());
+        return super.nullCheck(data).orElse(new Translation());
     }
 
     @Override
     public Translation getByTerm2Id(int term2ID) {
         Translation data = getterFromInt(getByTerm2IdStatement,term2ID);
-        return nullCheck(data,new Translation());
+        return super.nullCheck(data).orElse(new Translation());
     }
 
     @Override
@@ -93,7 +93,7 @@ public class TranslationDaoImpl extends DatabaseDao implements TranslationDao  {
                 insertStatement.setInt(i++, translation.getTerm2ID().getId());
                 insertStatement.setInt(i++, translation.getPriority());
 
-                return successfulAction(insertStatement.executeUpdate());
+                return insertStatement.executeUpdate()==1;
             } catch (SQLException ex) {
                 log.error(ex.getMessage(), ex);
                 return false;
@@ -113,7 +113,7 @@ public class TranslationDaoImpl extends DatabaseDao implements TranslationDao  {
                 updateStatement.setInt(i++, translation.getPriority());
                 updateStatement.setInt(i++, translation.getId());
 
-                return successfulAction(updateStatement.executeUpdate());
+                return updateStatement.executeUpdate()==1;
             } catch (SQLException ex) {
                 log.error(ex.getMessage(), ex);
                 return false;
@@ -128,6 +128,7 @@ public class TranslationDaoImpl extends DatabaseDao implements TranslationDao  {
         if (translation!=null) {
             return deleteFromDatabase(deleteStatement,translation.getId());
         } else {
+            log.warn("User tried to delete Translation with null value from data.");
             return false;
         }
     }

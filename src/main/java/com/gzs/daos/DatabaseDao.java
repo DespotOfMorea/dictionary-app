@@ -1,12 +1,12 @@
 package com.gzs.daos;
 
 import com.gzs.main.DBConnector;
-import com.gzs.main.NoConnectionException;
 import lombok.extern.slf4j.Slf4j;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 public abstract class DatabaseDao {
@@ -45,9 +45,7 @@ public abstract class DatabaseDao {
         return data;
     }
 
-    protected <T> T getFromResultSet(ResultSet resultSet) {
-        return null;
-    }
+    protected abstract <T> T getFromResultSet(ResultSet resultSet);
 
     protected <T> T getterFromInt(PreparedStatement statement, int num) {
         T data = null;
@@ -83,28 +81,19 @@ public abstract class DatabaseDao {
         return data;
     }
 
-    protected <T> T nullCheck(T t, T newT) {
-        if (t == null) {
-            t = newT;
-        }
-        return t;
+    protected <T> Optional<T> nullCheck(T t) {
+        return Optional.of(t);
     }
 
     protected boolean deleteFromDatabase(PreparedStatement deleteStatement, int id) {
         try {
             int i = 1;
             deleteStatement.setInt(i++, id);
-            return successfulAction(deleteStatement.executeUpdate());
+            return deleteStatement.executeUpdate()==1;
         } catch (SQLException ex) {
             log.error(ex.getMessage(), ex);
             return false;
         }
-    }
-
-    protected boolean successfulAction(int action) {
-        boolean result = true;
-        if (action == 0) result = false;
-        return result;
     }
 
     protected void endResultSet(ResultSet resultSet) {
