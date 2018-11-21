@@ -15,8 +15,7 @@ import java.util.Map;
 @Slf4j
 public class App {
 
-    private static Config defaultConfig;
-    private static Config fallbackConfig;
+    private static Config config;
     private static int PORT;
     private static final String CONTEXT_ROOT = "/";
     private static DBConnector dbConnector;
@@ -26,7 +25,6 @@ public class App {
 //        generateDBData();
 
         log.info("Starting application");
-        loadConfig();
         
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             LanguageDaoImpl.endStatements();
@@ -38,7 +36,9 @@ public class App {
             log.info("Application closed.");
         }));
 
-        PORT = fallbackConfig.getInt("connection.port");
+        Configuration configuration = Configuration.getInstance();
+        config = configuration.getConfiguration();
+        PORT = config.getInt("connection.port");
         Server jettyServer = new Server(PORT);
 
         final ServletContextHandler context = new ServletContextHandler(jettyServer, CONTEXT_ROOT);
@@ -53,43 +53,5 @@ public class App {
         } finally {
             jettyServer.destroy();
         }
-    }
-
-    private static void loadConfig() {
-        boolean isDefaultFromFile = true;
-        defaultConfig = ConfigFactory.parseResources("defaults.conf");
-        if (defaultConfig.isEmpty()) {
-            defaultConfig=loadDefaultConfig();
-            isDefaultFromFile=false;
-        }
-        fallbackConfig = ConfigFactory.parseResources("overrides.conf");
-
-        if (!isDefaultFromFile&&fallbackConfig.isEmpty()) {
-            log.error("Failed to load configuration files or they are empty.");
-        } else if (!isDefaultFromFile) {
-            log.error("Failed to load default configuration.");
-        } else if (fallbackConfig.isEmpty()) {
-            log.error("Failed to load override configuration file.");
-        } else {
-            log.info("Configuration loaded successfully.");
-        }
-
-        fallbackConfig = ConfigFactory.parseResources("overrides.conf").withFallback(defaultConfig).resolve();
-    }
-
-    private static Config loadDefaultConfig() {
-        Map<String, Object> defaultValuesMap = new HashMap();
-        defaultValuesMap.put("connection.port", 2222);
-        defaultValuesMap.put("database.path", "jdbc:mysql://localhost/");
-        defaultValuesMap.put("database.name", "geodictionary");
-        defaultValuesMap.put("database.username", "root");
-        defaultValuesMap.put("database.password", "");
-
-        Config config = ConfigFactory.parseMap(defaultValuesMap);
-        return config;
-    }
-
-    public static Config getFallbackConfig() {
-        return fallbackConfig;
     }
 }

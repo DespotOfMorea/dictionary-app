@@ -8,6 +8,7 @@ public class DBConnector {
 
     private static volatile DBConnector instance;
     private static Connection connection = null;
+    private static Config config;
     private static String dbPath;
     private static String dbName;
     private static String username;
@@ -15,11 +16,12 @@ public class DBConnector {
 
     private DBConnector(){
         connection = null;
-        Config fallbackConfig = App.getFallbackConfig();
-        dbPath = fallbackConfig.getString("database.path");
-        dbName = fallbackConfig.getString("database.name");
-        username = fallbackConfig.getString("database.username");
-        password = fallbackConfig.getString("database.password");
+        Configuration configuration = Configuration.getInstance();
+        config = configuration.getConfiguration();
+        dbPath = config.getString("database.path");
+        dbName = config.getString("database.name");
+        username = config.getString("database.username");
+        password = config.getString("database.password");
         try {
             createConn();
         } catch (SQLException e) {
