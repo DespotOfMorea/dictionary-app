@@ -21,7 +21,8 @@ public class RestMethods {
 
     public RestMethods() {
         mapper = new ObjectMapper();
-        DaoFactory daoFactory = DaoFactory.getDAOFactory(DaoFactory.INMEMORY);
+        Configuration configuration = Configuration.getInstance();
+        DaoFactory daoFactory = DaoFactory.getDAOFactory(configuration.getConfiguration().getString("data.type"));
         termDao = daoFactory.getTermDao();
         translationDao = daoFactory.getTranslationDao();
     }

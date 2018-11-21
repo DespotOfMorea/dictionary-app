@@ -1,5 +1,6 @@
 package com.gzs.main;
 
+import com.typesafe.config.Config;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.ServletContextHandler;
@@ -8,8 +9,8 @@ import org.jboss.resteasy.plugins.server.servlet.HttpServletDispatcher;
 
 @Slf4j
 public class App {
-
-    private static final int PORT = 2222;
+    private static Config config;
+    private static int PORT;
     private static final String CONTEXT_ROOT = "/";
     private static DBConnector dbConnector;
 
@@ -28,7 +29,10 @@ public class App {
             dbConnector.endConn();
             log.info("Application closed.");
         }));
-      
+
+        Configuration configuration = Configuration.getInstance();
+        config = configuration.getConfiguration();
+        PORT = config.getInt("connection.port");
         Server jettyServer = new Server(PORT);
 
         final ServletContextHandler context = new ServletContextHandler(jettyServer, CONTEXT_ROOT);
