@@ -1,22 +1,40 @@
 package com.gzs.daos.inmemory;
 
-import com.gzs.data.DataInMemoryCache;
-
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public abstract class InMemoryDao {
-/*
-    protected static DataInMemoryCache dataCache;
+public class InMemoryDao<T> {
 
-    static {
-        dataCache = DataInMemoryCache.getInstance();
+    protected Map<Integer, T> dataMap;
+
+    public InMemoryDao() {
+        this.dataMap = new HashMap<Integer, T>();
     }
-*/
 
-    public <T> List<T> getAllFromMap(Map<Integer, T> map) {
-        List<T> data = new ArrayList<>(map.values());
+    protected List<T> getAllFromMap() {
+        List<T> data = new ArrayList<>(dataMap.values());
         return data;
     }
+
+    protected T getById(int id) {
+        T newT;
+        newT = dataMap.get(id);
+        return newT;
+    }
+
+    protected boolean insertT (T t, int id) {
+        return dataMap.put(id, t) == null;
+    }
+
+    protected boolean updateT (T t, int id) {
+        return dataMap.replace(id, t) != null;
+    }
+
+    protected boolean deleteT (int id) {
+        return dataMap.remove(id) != null;
+    }
+
+
 }

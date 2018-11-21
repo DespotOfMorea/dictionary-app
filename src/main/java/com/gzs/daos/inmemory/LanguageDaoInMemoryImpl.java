@@ -1,35 +1,38 @@
 package com.gzs.daos.inmemory;
 
 import com.gzs.daos.LanguageDao;
-import com.gzs.data.DataInMemoryCache;
+import com.gzs.data.GenerateTestData;
 import com.gzs.model.Language;
 
 import java.util.List;
 import java.util.Map;
 
-public class LanguageDaoInMemoryImpl extends InMemoryDao implements LanguageDao {
-
-    private static DataInMemoryCache dataCache;
+public class LanguageDaoInMemoryImpl extends InMemoryDao<Language> implements LanguageDao {
+    private static GenerateTestData generatedData;
 
     static {
-        dataCache = DataInMemoryCache.getInstance();
+        generatedData = GenerateTestData.getInstance();
+    }
+
+    public LanguageDaoInMemoryImpl() {
+        super();
+        this.dataMap = generatedData.getLanguages();
     }
 
     @Override
     public List<Language> getAll() {
-        return getAllFromMap(dataCache.getLanguages());
+        return getAllFromMap();
     }
 
     @Override
     public Language get(int id) {
-        return dataCache.getLanguage(id);
+        return getById(id);
     }
 
     @Override
     public Language getByEnglishName(String englishName) {
         Language language = new Language();
-        Map<Integer, Language> map = dataCache.getLanguages();
-        for (Map.Entry<Integer, Language> entry : map.entrySet()) {
+        for (Map.Entry<Integer, Language> entry : dataMap.entrySet()) {
             if (englishName.equals(entry.getValue().getEnglishName())) {
                 language = entry.getValue();
             }
@@ -40,8 +43,7 @@ public class LanguageDaoInMemoryImpl extends InMemoryDao implements LanguageDao 
     @Override
     public Language getByNativeName(String nativeName) {
         Language language = new Language();
-        Map<Integer, Language> map = dataCache.getLanguages();
-        for (Map.Entry<Integer, Language> entry : map.entrySet()) {
+        for (Map.Entry<Integer, Language> entry : dataMap.entrySet()) {
             if (nativeName.equals(entry.getValue().getNativeName())) {
                 language = entry.getValue();
             }
@@ -52,8 +54,7 @@ public class LanguageDaoInMemoryImpl extends InMemoryDao implements LanguageDao 
     @Override
     public Language getByIsoCode(String iso) {
         Language language = new Language();
-        Map<Integer, Language> map = dataCache.getLanguages();
-        for (Map.Entry<Integer, Language> entry : map.entrySet()) {
+        for (Map.Entry<Integer, Language> entry : dataMap.entrySet()) {
             if (iso.equals(entry.getValue().getIsoCode())) {
                 language = entry.getValue();
             }
@@ -64,7 +65,7 @@ public class LanguageDaoInMemoryImpl extends InMemoryDao implements LanguageDao 
     @Override
     public boolean insert(Language language) {
         if (language != null) {
-            return dataCache.insertLanguage(language);
+            return insertT(language,language.getId());
         } else {
             return false;
         }
@@ -73,7 +74,7 @@ public class LanguageDaoInMemoryImpl extends InMemoryDao implements LanguageDao 
     @Override
     public boolean update(Language language) {
         if (language != null) {
-            return dataCache.updateLanguage(language);
+            return updateT(language,language.getId());
         } else {
             return false;
         }
@@ -82,7 +83,7 @@ public class LanguageDaoInMemoryImpl extends InMemoryDao implements LanguageDao 
     @Override
     public boolean delete(Language language) {
         if (language != null) {
-            return dataCache.deleteLanguage(language);
+            return deleteT(language.getId());
         } else {
             return false;
         }

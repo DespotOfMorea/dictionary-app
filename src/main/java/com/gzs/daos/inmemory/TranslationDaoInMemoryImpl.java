@@ -1,36 +1,38 @@
 package com.gzs.daos.inmemory;
 
 import com.gzs.daos.TranslationDao;
-import com.gzs.data.DataInMemoryCache;
+import com.gzs.data.GenerateTestData;
 import com.gzs.model.Translation;
 
 import java.util.List;
 import java.util.Map;
 
-public class TranslationDaoInMemoryImpl extends InMemoryDao implements TranslationDao {
-
-    private static DataInMemoryCache dataCache;
+public class TranslationDaoInMemoryImpl extends InMemoryDao<Translation> implements TranslationDao {
+    private static GenerateTestData generatedData;
 
     static {
-        dataCache = DataInMemoryCache.getInstance();
+        generatedData = GenerateTestData.getInstance();
+    }
+
+    public TranslationDaoInMemoryImpl() {
+        super();
+        this.dataMap = generatedData.getTranslations();
     }
 
     @Override
     public List<Translation> getAll() {
-        return getAllFromMap(dataCache.getTranslations());
+        return getAllFromMap();
     }
 
     @Override
     public Translation get(int id) {
-        return dataCache.getTranslation(id);
+        return getById(id);
     }
 
     @Override
     public Translation getByTerm1Id(int term1ID) {
         Translation translation = new Translation();
-
-        Map<Integer, Translation> map = dataCache.getTranslations();
-        for (Map.Entry<Integer, Translation> entry : map.entrySet()) {
+        for (Map.Entry<Integer, Translation> entry : dataMap.entrySet()) {
             if (term1ID == entry.getValue().getTerm1ID().getId()) {
                 translation = entry.getValue();
             }
@@ -41,9 +43,7 @@ public class TranslationDaoInMemoryImpl extends InMemoryDao implements Translati
     @Override
     public Translation getByTerm2Id(int term2ID) {
         Translation translation = new Translation();
-
-        Map<Integer, Translation> map = dataCache.getTranslations();
-        for (Map.Entry<Integer, Translation> entry : map.entrySet()) {
+        for (Map.Entry<Integer, Translation> entry : dataMap.entrySet()) {
             if (term2ID == entry.getValue().getTerm2ID().getId()) {
                 translation = entry.getValue();
             }
@@ -54,7 +54,7 @@ public class TranslationDaoInMemoryImpl extends InMemoryDao implements Translati
     @Override
     public boolean insert(Translation translation) {
         if (translation != null) {
-            return dataCache.insertTranslation(translation);
+            return insertT(translation,translation.getId());
         } else {
             return false;
         }
@@ -63,7 +63,7 @@ public class TranslationDaoInMemoryImpl extends InMemoryDao implements Translati
     @Override
     public boolean update(Translation translation) {
         if (translation != null) {
-            return dataCache.updateTranslation(translation);
+            return updateT(translation,translation.getId());
         } else {
             return false;
         }
@@ -72,7 +72,7 @@ public class TranslationDaoInMemoryImpl extends InMemoryDao implements Translati
     @Override
     public boolean delete(Translation translation) {
         if (translation != null) {
-            return dataCache.deleteTranslation(translation);
+            return deleteT(translation.getId());
         } else {
             return false;
         }
