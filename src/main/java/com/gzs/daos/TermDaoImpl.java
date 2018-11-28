@@ -60,14 +60,14 @@ public class TermDaoImpl extends DatabaseDao implements TermDao {
 
     @Override
     public Term get(int id) {
-        Term data = getterFromInt(getByIdStatement,id);
-        return nullCheck(data).orElse(new Term());
+        Term data = (Term) getterFromInt(getByIdStatement,id).orElse(new Term());
+        return data;
     }
 
     @Override
     public Term getByTerm(String term) {
-        Term data = getterFromString(getByTermStatement,term);
-        return nullCheck(data).orElse(new Term());
+        Term data = (Term) getterFromString(getByTermStatement,term).orElse(new Term());
+        return data;
     }
 
     @Override
@@ -159,7 +159,7 @@ public class TermDaoImpl extends DatabaseDao implements TermDao {
 
     @Override
     public Term getTermsTranslation(String term) {
-        Term data = getterFromString(getTermsTranslationStatement,term);
-        return super.nullCheck(data).orElse(new Term());
+        Term data = (Term) getterFromString(getTermsTranslationStatement,term).orElse(new Term());
+        return data;
     }
 }

@@ -47,7 +47,7 @@ public abstract class DatabaseDao {
 
     protected abstract <T> T getFromResultSet(ResultSet resultSet);
 
-    protected <T> T getterFromInt(PreparedStatement statement, int num) {
+    protected <T> Optional<T> getterFromInt(PreparedStatement statement, int num) {
         T data = null;
         ResultSet resultSet = null;
         try {
@@ -61,10 +61,10 @@ public abstract class DatabaseDao {
         } finally {
             endResultSet(resultSet);
         }
-        return data;
+        return Optional.ofNullable(data);
     }
 
-    protected <T> T getterFromString(PreparedStatement statement, String s) {
+    protected <T> Optional<T> getterFromString(PreparedStatement statement, String s) {
         T data = null;
         ResultSet resultSet = null;
         try {
@@ -78,11 +78,7 @@ public abstract class DatabaseDao {
         } finally {
             endResultSet(resultSet);
         }
-        return data;
-    }
-
-    protected <T> Optional<T> nullCheck(T t) {
-        return Optional.ofNullable(t);
+        return Optional.ofNullable(data);
     }
 
     protected boolean deleteFromDatabase(PreparedStatement deleteStatement, int id) {
