@@ -1,14 +1,13 @@
 package com.gzs.main;
 
-import com.typesafe.config.Config;
-
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 
 public class DBConnector {
 
     private static volatile DBConnector instance;
     private static Connection connection = null;
-    private static Config config;
     private static String dbPath;
     private static String dbName;
     private static String username;
@@ -16,12 +15,11 @@ public class DBConnector {
 
     private DBConnector(){
         connection = null;
-        Configuration configuration = Configuration.getInstance();
-        config = configuration.getConfiguration();
-        dbPath = config.getString("database.path");
-        dbName = config.getString("database.name");
-        username = config.getString("database.username");
-        password = config.getString("database.password");
+        Configuration config = new Configuration ();
+        dbPath = config.getDBPath();
+        dbName = config.getDBName();
+        username = config.getDBUserName();
+        password = config.getDBPassword();
         try {
             createConn();
         } catch (SQLException e) {
