@@ -4,9 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gzs.daos.DaoFactory;
 import com.gzs.daos.TermDao;
-import com.gzs.daos.mysql.TermDaoMySQLImpl;
 import com.gzs.daos.TranslationDao;
-import com.gzs.daos.mysql.TranslationDaoMySQLImpl;
 import com.gzs.log.CustomInfo;
 import com.gzs.model.Term;
 
@@ -21,8 +19,8 @@ public class RestMethods {
 
     public RestMethods() {
         mapper = new ObjectMapper();
-        Configuration configuration = Configuration.getInstance();
-        DaoFactory daoFactory = DaoFactory.getDAOFactory(configuration.getConfiguration().getString("data.type"));
+        Configuration config = new Configuration();
+        DaoFactory daoFactory = DaoFactory.getDAOFactory(config.getDataType());
         termDao = daoFactory.getTermDao();
         translationDao = daoFactory.getTranslationDao();
     }

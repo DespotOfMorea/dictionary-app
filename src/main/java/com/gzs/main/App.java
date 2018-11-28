@@ -9,8 +9,7 @@ import org.jboss.resteasy.plugins.server.servlet.HttpServletDispatcher;
 
 @Slf4j
 public class App {
-    private static Config config;
-    private static int PORT;
+    private static Configuration config;
     private static final String CONTEXT_ROOT = "/";
     private static DBConnector dbConnector;
 
@@ -19,6 +18,7 @@ public class App {
 //        generateDBData();
 
         log.info("Starting application");
+        config = new Configuration();
 
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
 //            LanguageDaoImpl.endStatements();
@@ -30,10 +30,7 @@ public class App {
             log.info("Application closed.");
         }));
 
-        Configuration configuration = Configuration.getInstance();
-        config = configuration.getConfiguration();
-        PORT = config.getInt("connection.port");
-        Server jettyServer = new Server(PORT);
+        Server jettyServer = new Server(config.getPort());
 
         final ServletContextHandler context = new ServletContextHandler(jettyServer, CONTEXT_ROOT);
         final ServletHolder restEasyServlet = new ServletHolder(new HttpServletDispatcher());

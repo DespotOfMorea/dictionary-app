@@ -2,7 +2,7 @@ package com.gzs.daos;
 
 public abstract class  DaoFactory {
     public static final String MYSQL = "MySQL";
-    public static final String INMEMORY= "In Memory";
+    public static final String INMEMORY= "InMemory";
 
     public abstract LanguageDao getLanguageDao();
     public abstract TermDao getTermDao();

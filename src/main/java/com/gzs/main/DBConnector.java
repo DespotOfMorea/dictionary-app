@@ -13,10 +13,11 @@ public class DBConnector {
 
     private DBConnector(){
         connection = null;
-        dbPath = "jdbc:mysql://localhost/";
-        dbName = "geodictionary";
-        username = "root";
-        password = "";
+        Configuration config = new Configuration ();
+        dbPath = config.getDBPath();
+        dbName = config.getDBName();
+        username = config.getDBUserName();
+        password = config.getDBPassword();
         try {
             createConn();
         } catch (SQLException e) {

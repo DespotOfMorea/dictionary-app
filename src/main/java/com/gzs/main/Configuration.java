@@ -9,25 +9,13 @@ import java.util.Map;
 
 @Slf4j
 public class Configuration {
-    private static volatile Configuration instance;
+
     private static Config defaultConfig;
     private static Config fallbackConfig;
 
-    private Configuration() {
+    public Configuration() {
         loadConfig();
     }
-
-    public static synchronized Configuration getInstance() {
-        if (instance == null) {
-            synchronized (Configuration.class) {
-                if (instance == null) {
-                    instance = new Configuration();
-                }
-            }
-        }
-        return instance;
-    }
-
 
     private void loadConfig() {
         boolean isDefaultFromFile = true;
@@ -63,7 +51,27 @@ public class Configuration {
         return config;
     }
 
-    public Config getConfiguration() {
-        return fallbackConfig;
+    public int getPort() {
+        return fallbackConfig.getInt("connection.port");
+    }
+
+    public String getDataType() {
+        return fallbackConfig.getString("data.type");
+    }
+
+    public String getDBPath() {
+        return fallbackConfig.getString("database.path");
+    }
+
+    public String getDBName() {
+        return fallbackConfig.getString("database.name");
+    }
+
+    public String getDBUserName() {
+        return fallbackConfig.getString("database.username");
+    }
+
+    public String getDBPassword() {
+        return fallbackConfig.getString("database.password");
     }
 }
