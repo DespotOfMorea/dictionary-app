@@ -51,19 +51,19 @@ public class TranslationDaoImpl extends DatabaseDao implements TranslationDao  {
 
     @Override
     public Translation get(int id) {
-        Translation data = (Translation) getterFromInt(getByIdStatement,id).orElse(new Translation());
+        Translation data = (Translation) getterFromInt(getByIdStatement,id).orElseGet(()->new Translation());
         return data;
     }
 
     @Override
     public Translation getByTerm1Id(int term1ID) {
-        Translation data = (Translation) getterFromInt(getByTerm1IdStatement,term1ID).orElse(new Translation());
+        Translation data = (Translation) getterFromInt(getByTerm1IdStatement,term1ID).orElseGet(()->new Translation());
         return data;
     }
 
     @Override
     public Translation getByTerm2Id(int term2ID) {
-        Translation data = (Translation) getterFromInt(getByTerm2IdStatement,term2ID).orElse(new Translation());
+        Translation data = (Translation) getterFromInt(getByTerm2IdStatement,term2ID).orElseGet(()->new Translation());
         return data;
     }
 
