@@ -16,10 +16,10 @@ public class DBConnector {
     private DBConnector(){
         connection = null;
         Configuration config = new Configuration ();
-        dbPath = config.getDBPath();
-        dbName = config.getDBName();
-        username = config.getDBUserName();
-        password = config.getDBPassword();
+        dbPath = config.getDbPath();
+        dbName = config.getDbName();
+        username = config.getDbUserName();
+        password = config.getDbPassword();
         try {
             createConn();
         } catch (SQLException e) {

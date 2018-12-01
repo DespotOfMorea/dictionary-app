@@ -2,41 +2,51 @@ package com.gzs.main;
 
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.HashMap;
 import java.util.Map;
 
 @Slf4j
+@Getter
 public class Configuration {
     
     private static Config defaultConfig;
-    private static Config fallbackConfig;
+    private static Config config;
+
+    private int port;
+    private String dataType;
+    private String dbPath;
+    private String dbName;
+    private String dbUserName;
+    private String dbPassword;
 
     public Configuration() {
-        loadConfig();
+        loadConfigFiles();
+        loadConfigValues();
     }
 
-    private void loadConfig() {
+    private void loadConfigFiles() {
         boolean isDefaultFromFile = true;
         defaultConfig = ConfigFactory.parseResources("defaults.conf");
         if (defaultConfig.isEmpty()) {
             defaultConfig = loadDefaultConfig();
             isDefaultFromFile = false;
         }
-        fallbackConfig = ConfigFactory.parseResources("overrides.conf");
+        config = ConfigFactory.parseResources("overrides.conf");
 
-        if (!isDefaultFromFile && fallbackConfig.isEmpty()) {
+        if (!isDefaultFromFile && config.isEmpty()) {
             log.error("Failed to load configuration files or they are empty.");
         } else if (!isDefaultFromFile) {
             log.error("Failed to load default configuration.");
-        } else if (fallbackConfig.isEmpty()) {
+        } else if (config.isEmpty()) {
             log.error("Failed to load override configuration file.");
         } else {
             log.info("Configuration loaded successfully.");
         }
 
-        fallbackConfig = ConfigFactory.parseResources("overrides.conf").withFallback(defaultConfig).resolve();
+        config = ConfigFactory.parseResources("overrides.conf").withFallback(defaultConfig).resolve();
     }
 
     private Config loadDefaultConfig() {
@@ -51,23 +61,12 @@ public class Configuration {
         return config;
     }
 
-    public int getPort() {
-        return fallbackConfig.getInt("connection.port");
-    }
-
-    public String getDBPath() {
-        return fallbackConfig.getString("database.path");
-    }
-
-    public String getDBName() {
-        return fallbackConfig.getString("database.name");
-    }
-
-    public String getDBUserName() {
-        return fallbackConfig.getString("database.username");
-    }
-
-    public String getDBPassword() {
-        return fallbackConfig.getString("database.password");
+    private void loadConfigValues() {
+        port = config.getInt("connection.port");
+        dataType = config.getString("data.type");
+        dbPath = config.getString("database.path");
+        dbName = config.getString("database.name");
+        dbUserName = config.getString("database.username");
+        dbPassword = config.getString("database.password");
     }
 }
