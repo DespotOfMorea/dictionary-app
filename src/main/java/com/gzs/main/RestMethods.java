@@ -41,16 +41,7 @@ public class RestMethods {
         int termId = termDao.getByTerm(termName).getId();
         if (termId != 0) {
             int translationId = translationDao.getByTerm1Id(termId).getId();
-            System.out.println("SISTEMMMMMMMM                      "+translationId);
             if (translationId!=0){
-
-
-                Translation trans = translationDao.getByTerm1Id(termId);
-                System.out.println("SISTEMMMMMMMM                      "+trans);
-                Term ttt = trans.getTerm2ID();
-                System.out.println("SISTEMMMMMMMM                      "+ttt);
-                int id = ttt.getId();
-                System.out.println("SISTEMMMMMMMM                      "+id);
                 int translatedTermId = translationDao.getByTerm1Id(termId).getTerm2ID().getId();
                 Term term = termDao.get(translatedTermId);
                 ObjectMapper mapper = new ObjectMapper();
