@@ -1,6 +1,8 @@
 package com.gzs.main;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 
 public class DBConnector {
 
@@ -13,10 +15,11 @@ public class DBConnector {
 
     private DBConnector() {
         connection = null;
-        dbPath = "jdbc:mysql://localhost/";
-        dbName = "geodictionary";
-        username = "root";
-        password = "";
+        Configuration config = new Configuration ();
+        dbPath = config.getDbPath();
+        dbName = config.getDbName();
+        username = config.getDbUserName();
+        password = config.getDbPassword();
         try {
             connection = DriverManager.getConnection(dbPath + dbName, username, password);
         } catch (SQLException e) {

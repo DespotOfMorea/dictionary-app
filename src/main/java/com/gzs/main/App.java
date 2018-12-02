@@ -1,6 +1,8 @@
 package com.gzs.main;
 
-import com.gzs.daos.*;
+import com.gzs.daos.LanguageDaoImpl;
+import com.gzs.daos.TermDaoImpl;
+import com.gzs.daos.TranslationDaoImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.ServletContextHandler;
@@ -10,7 +12,7 @@ import org.jboss.resteasy.plugins.server.servlet.HttpServletDispatcher;
 @Slf4j
 public class App {
 
-    private static final int PORT = 2222;
+    private static Configuration config;
     private static final String CONTEXT_ROOT = "/";
     private static DBConnector dbConnector;
 
@@ -19,6 +21,8 @@ public class App {
 //        generateDBData();
 
         log.info("Starting application");
+        config = new Configuration();
+        
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             log.info("Starting application shutdown process.");
             LanguageDaoImpl.endStatements();
@@ -33,8 +37,8 @@ public class App {
             log.info("Connection is closed.");
             log.info("Application closed.");
         }));
-      
-        Server jettyServer = new Server(PORT);
+
+        Server jettyServer = new Server(config.getPort());
 
         final ServletContextHandler context = new ServletContextHandler(jettyServer, CONTEXT_ROOT);
         final ServletHolder restEasyServlet = new ServletHolder(new HttpServletDispatcher());
