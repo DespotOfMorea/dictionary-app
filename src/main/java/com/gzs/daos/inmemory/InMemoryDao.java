@@ -1,11 +1,13 @@
 package com.gzs.daos.inmemory;
 
+import com.gzs.model.DatabaseEntity;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class InMemoryDao<T> {
+public class InMemoryDao<T extends DatabaseEntity> {
 
     protected Map<Integer, T> dataMap;
 
@@ -19,22 +21,18 @@ public class InMemoryDao<T> {
     }
 
     protected T getById(int id) {
-        T newT;
-        newT = dataMap.get(id);
-        return newT;
+        return dataMap.get(id);
     }
 
-    protected boolean insertT (T t, int id) {
-        return dataMap.put(id, t) == null;
+    public boolean insert (T t) {
+        return t != null ? dataMap.put(t.getId(),t) == null : false;
     }
 
-    protected boolean updateT (T t, int id) {
-        return dataMap.replace(id, t) != null;
+    public boolean update (T t) {
+        return t != null ? dataMap.replace(t.getId(),t) != null : false;
     }
 
-    protected boolean deleteT (int id) {
-        return dataMap.remove(id) != null;
+    public boolean delete (T t) {
+        return t != null ? dataMap.remove(t.getId()) != null : false;
     }
-
-
 }

@@ -2,22 +2,19 @@ package com.gzs.daos.mysql;
 
 import com.gzs.daos.LanguageDao;
 import com.gzs.daos.TermDao;
-import com.gzs.main.DBConnector;
 import com.gzs.model.Term;
 import lombok.extern.slf4j.Slf4j;
 
-import java.sql.*;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.gzs.daos.mysql.LanguageDaoMySQLImpl.successfulAction;
-
 @Slf4j
-public class TermDaoMySQLImpl implements TermDao {
+public class TermDaoMySQLImpl extends DatabaseDao implements TermDao {
 
-    private static String tableName;
-    private static DBConnector dbConnector;
-    private static Connection connection;
+    private static List<PreparedStatement> statements;
     private static PreparedStatement getAllStatement;
     private static PreparedStatement getByIdStatement;
     private static PreparedStatement getByTermStatement;
@@ -25,11 +22,10 @@ public class TermDaoMySQLImpl implements TermDao {
     private static PreparedStatement insertStatement;
     private static PreparedStatement updateStatement;
     private static PreparedStatement deleteStatement;
+    private static PreparedStatement getTermsTranslationStatement;
 
     static {
-        tableName = "terms";
-        dbConnector = DBConnector.getInstance();
-        connection = dbConnector.getConn();
+        String tableName = "terms";
         try {
             getAllStatement = connection.prepareStatement("SELECT * FROM " + tableName);
             getByIdStatement = connection.prepareStatement("SELECT * FROM " + tableName + " WHERE id = ?");
@@ -38,6 +34,20 @@ public class TermDaoMySQLImpl implements TermDao {
             insertStatement = connection.prepareStatement("INSERT INTO " + tableName + " VALUES (?,?,?,?)");
             updateStatement = connection.prepareStatement("UPDATE " + tableName + " SET term=?, meaning=?, languageID=? WHERE id=?");
             deleteStatement = connection.prepareStatement("DELETE FROM " + tableName + " WHERE id = ?");
+
+            getTermsTranslationStatement = connection.prepareStatement("SELECT * FROM terms WHERE id IN " +
+                    "(SELECT Term2ID FROM translations WHERE Term1ID IN " +
+                    "(SELECT id FROM terms WHERE term = ?))");
+
+            statements = new ArrayList<>();
+            statements.add(getAllStatement);
+            statements.add(getByIdStatement);
+            statements.add(getByTermStatement);
+            statements.add(getByTermLangStatement);
+            statements.add(insertStatement);
+            statements.add(updateStatement);
+            statements.add(deleteStatement);
+            statements.add(getTermsTranslationStatement);
         } catch (SQLException ex) {
             log.error(ex.getMessage(), ex);
         }
@@ -45,52 +55,24 @@ public class TermDaoMySQLImpl implements TermDao {
 
     @Override
     public List<Term> getAll() {
-        List<Term> data = new ArrayList<>();
-        ResultSet resultSet = null;
-        try {
-            resultSet = getAllStatement.executeQuery();
-            while (resultSet.next()) {
-                data.add(getTermFromResultSet(resultSet));
-            }
-        } catch (SQLException ex) {
-            log.error(ex.getMessage(), ex);
-        } finally {
-            endResultSet(resultSet);
-        }
-        return data;
+        return getAllFromDatabase(getAllStatement);
     }
 
     @Override
     public Term get(int id) {
-        Term data = new Term();
-        ResultSet resultSet = null;
-        try {
-            getByIdStatement.setInt(1,id);
-            resultSet = getByIdStatement.executeQuery();
-            if (resultSet.next()) {
-                data = getTermFromResultSet(resultSet);
-            }
-        } catch (SQLException ex) {
-            log.error(ex.getMessage(), ex);
-        } finally {
-            endResultSet(resultSet);
-        }
+        Term data = (Term) getterFromInt(getByIdStatement,id).orElseGet(()->new Term());
         return data;
     }
 
     @Override
     public Term getByTerm(String term) {
-        Term data = new Term();
-        ResultSet resultSet = null;
-        try {
-            getByTermStatement.setString(1,term);
-            resultSet = getByTermStatement.executeQuery();
-            if (resultSet.next()) {
-                data = getTermFromResultSet(resultSet);
-            }
-        } catch (SQLException ex) {
-            log.error(ex.getMessage(), ex);
-        }
+        Term data = (Term) getterFromString(getByTermStatement,term).orElseGet(()->new Term());
+        return data;
+    }
+
+    @Override
+    public Term getTermsTranslation(String term) {
+        Term data = (Term) getterFromString(getTermsTranslationStatement,term).orElseGet(()->new Term());
         return data;
     }
 
@@ -103,7 +85,7 @@ public class TermDaoMySQLImpl implements TermDao {
             getByTermLangStatement.setInt(2,langId);
             resultSet = getByTermLangStatement.executeQuery();
             if (resultSet.next()) {
-                data = getTermFromResultSet(resultSet);
+                data = getFromResultSet(resultSet);
             }
         } catch (SQLException ex) {
             log.error(ex.getMessage(), ex);
@@ -111,7 +93,8 @@ public class TermDaoMySQLImpl implements TermDao {
         return data;
     }
 
-    private Term getTermFromResultSet(ResultSet resultSet) {
+    @Override
+    protected Term getFromResultSet(ResultSet resultSet) {
         Term returnTerm = new Term();
         LanguageDao languageDao = new LanguageDaoMySQLImpl();
         try {
@@ -136,7 +119,7 @@ public class TermDaoMySQLImpl implements TermDao {
                 insertStatement.setString(i++, term.getMeaning());
                 insertStatement.setInt(i++, term.getLanguage().getId());
 
-                return successfulAction(insertStatement.executeUpdate());
+                return insertStatement.executeUpdate()==1;
             } catch (SQLException ex) {
                 log.error(ex.getMessage(), ex);
                 return false;
@@ -156,7 +139,7 @@ public class TermDaoMySQLImpl implements TermDao {
                 updateStatement.setInt(i++, term.getLanguage().getId());
                 updateStatement.setInt(i++, term.getId());
 
-                return successfulAction(updateStatement.executeUpdate());
+                return updateStatement.executeUpdate()==1;
             } catch (SQLException ex) {
                 log.error(ex.getMessage(), ex);
                 return false;
@@ -169,46 +152,14 @@ public class TermDaoMySQLImpl implements TermDao {
     @Override
     public boolean delete(Term term) {
         if (term!=null) {
-            try {
-                int i = 1;
-                deleteStatement.setInt(i++, term.getId());
-
-                return successfulAction(deleteStatement.executeUpdate());
-            } catch (SQLException ex) {
-                log.error(ex.getMessage(), ex);
-                return false;
-            }
+            return deleteFromDatabase(deleteStatement, term.getId());
         } else {
+            log.warn("User tried to delete Term with null value from data.");
             return false;
         }
     }
 
-    private static void endResultSet(ResultSet resultSet) {
-        try {
-            if (null != resultSet) {
-                resultSet.close();
-            }
-        } catch (SQLException ex) {
-            log.error(ex.getMessage(), ex);
-        }
-    }
-
     public static void endStatements() {
-        endStatemnt(getAllStatement);
-        endStatemnt(getByIdStatement);
-        endStatemnt(getByTermStatement);
-        endStatemnt(insertStatement);
-        endStatemnt(updateStatement);
-        endStatemnt(deleteStatement);
-    }
-
-    private static void endStatemnt (Statement statement) {
-        try {
-            if (null != statement) {
-                statement.close();
-            }
-        } catch (SQLException ex) {
-            log.error(ex.getMessage(), ex);
-        }
+        statements.forEach(statement -> endStatement(statement));
     }
 }

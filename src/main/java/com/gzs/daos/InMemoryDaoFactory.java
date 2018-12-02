@@ -19,4 +19,9 @@ public class InMemoryDaoFactory extends DaoFactory {
     public TranslationDao getTranslationDao() {
         return new TranslationDaoInMemoryImpl();
     }
+
+    @Override
+    public void closeResources() {
+
+    }
 }

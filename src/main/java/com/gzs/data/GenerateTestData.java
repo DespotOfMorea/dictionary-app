@@ -23,7 +23,7 @@ public class GenerateTestData {
         this.languages = new HashMap<>();
         this.terms = new HashMap<>();
         this.translations = new HashMap<>();
-        createTestData();
+//        createTestData();
     }
 
     public static synchronized GenerateTestData getInstance() {
@@ -47,7 +47,19 @@ public class GenerateTestData {
         return translations;
     }
 
-    private static void createTestData() {
+    public static void setLanguages(Map<Integer, Language> languages) {
+        GenerateTestData.languages = languages;
+    }
+
+    public static void setTerms(Map<Integer, Term> terms) {
+        GenerateTestData.terms = terms;
+    }
+
+    public static void setTranslations(Map<Integer, Translation> translations) {
+        GenerateTestData.translations = translations;
+    }
+
+    public static void createTestData() {
         LanguageDao languageDao = new LanguageDaoInMemoryImpl();
         TermDao termDao = new TermDaoInMemoryImpl();
         TranslationDao translationDao = new TranslationDaoInMemoryImpl();

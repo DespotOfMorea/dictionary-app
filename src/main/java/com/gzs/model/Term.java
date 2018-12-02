@@ -7,18 +7,17 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Term {
-    private int id;
+public class Term extends DatabaseEntity{
     private String term;
     private String meaning;
     private Language language;
 
-    public Term(String term, String meaning, Language language) {
+    public Term(int id, String term, String meaning, Language language) {
+        super(id);
         this.term = term;
         this.meaning = meaning;
         this.language = language;
     }
-
 
     public Term(int id, String term, String meaning, int languageID) {
         this.id = id;

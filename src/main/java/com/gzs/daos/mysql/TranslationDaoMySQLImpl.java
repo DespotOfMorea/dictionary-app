@@ -2,42 +2,45 @@ package com.gzs.daos.mysql;
 
 import com.gzs.daos.TermDao;
 import com.gzs.daos.TranslationDao;
-import com.gzs.main.DBConnector;
 import com.gzs.model.Translation;
 import lombok.extern.slf4j.Slf4j;
 
-import java.sql.*;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.gzs.daos.mysql.LanguageDaoMySQLImpl.successfulAction;
-
 @Slf4j
-public class TranslationDaoMySQLImpl implements TranslationDao {
+public class TranslationDaoMySQLImpl extends DatabaseDao implements TranslationDao  {
 
-    private static String tableName;
-    private static DBConnector dbConnector;
-    private static Connection connection;
+    private static List<PreparedStatement> statements;
     private static PreparedStatement getAllStatement;
-    private static PreparedStatement getByIdstatement;
-    private static PreparedStatement getByTerm1Idstatement;
-    private static PreparedStatement getByTerm2Idstatement;
+    private static PreparedStatement getByIdStatement;
+    private static PreparedStatement getByTerm1IdStatement;
+    private static PreparedStatement getByTerm2IdStatement;
     private static PreparedStatement insertStatement;
     private static PreparedStatement updateStatement;
     private static PreparedStatement deleteStatement;
 
     static {
-        tableName = "translations";
-        dbConnector = DBConnector.getInstance();
-        connection = dbConnector.getConn();
+        String tableName = "translations";
         try {
             getAllStatement = connection.prepareStatement("SELECT * FROM " + tableName);
-            getByIdstatement = connection.prepareStatement("SELECT * FROM " + tableName + " WHERE id = ?");
-            getByTerm1Idstatement = connection.prepareStatement("SELECT * FROM " + tableName + " WHERE term1id = ?");
-            getByTerm2Idstatement = connection.prepareStatement("SELECT * FROM " + tableName + " WHERE term2id = ?");
+            getByIdStatement = connection.prepareStatement("SELECT * FROM " + tableName + " WHERE id = ?");
+            getByTerm1IdStatement = connection.prepareStatement("SELECT * FROM " + tableName + " WHERE term1id = ?");
+            getByTerm2IdStatement = connection.prepareStatement("SELECT * FROM " + tableName + " WHERE term2id = ?");
             insertStatement = connection.prepareStatement("INSERT INTO " + tableName + " VALUES (?,?,?,?)");
             updateStatement = connection.prepareStatement("UPDATE " + tableName + " SET term1id=?, term2id=?, priority=? WHERE id=?");
             deleteStatement = connection.prepareStatement("DELETE FROM " + tableName + " WHERE id = ?");
+            statements = new ArrayList<>();
+            statements.add(getAllStatement);
+            statements.add(getByIdStatement);
+            statements.add(getByTerm1IdStatement);
+            statements.add(getByTerm2IdStatement);
+            statements.add(insertStatement);
+            statements.add(updateStatement);
+            statements.add(deleteStatement);
         } catch (SQLException ex) {
             log.error(ex.getMessage(), ex);
         }
@@ -45,76 +48,29 @@ public class TranslationDaoMySQLImpl implements TranslationDao {
 
     @Override
     public List<Translation> getAll() {
-        List<Translation> data = new ArrayList<>();
-        ResultSet resultSet = null;
-        try {
-            resultSet = getAllStatement.executeQuery();
-            while (resultSet.next()) {
-                data.add(getTranslationFromResultSet(resultSet));
-            }
-        } catch (SQLException ex) {
-            log.error(ex.getMessage(), ex);
-        } finally {
-            endResultSet(resultSet);
-        }
-        return data;
+        return getAllFromDatabase(getAllStatement);
     }
 
     @Override
     public Translation get(int id) {
-        Translation data = new Translation();
-        ResultSet resultSet = null;
-        try {
-            getByIdstatement.setInt(1, id);
-            resultSet = getByIdstatement.executeQuery();
-            if (resultSet.next()) {
-                data = getTranslationFromResultSet(resultSet);
-            }
-        } catch (SQLException ex) {
-            log.error(ex.getMessage(), ex);
-        } finally {
-            endResultSet(resultSet);
-        }
+        Translation data = (Translation) getterFromInt(getByIdStatement,id).orElseGet(()->new Translation());
         return data;
     }
 
     @Override
     public Translation getByTerm1Id(int term1ID) {
-        Translation data = new Translation();
-        ResultSet resultSet = null;
-        try {
-            getByTerm1Idstatement.setInt(1, term1ID);
-            resultSet = getByTerm1Idstatement.executeQuery();
-            if (resultSet.next()) {
-                data = getTranslationFromResultSet(resultSet);
-            }
-        } catch (SQLException ex) {
-            log.error(ex.getMessage(), ex);
-        } finally {
-            endResultSet(resultSet);
-        }
+        Translation data = (Translation) getterFromInt(getByTerm1IdStatement,term1ID).orElseGet(()->new Translation());
         return data;
     }
 
     @Override
     public Translation getByTerm2Id(int term2ID) {
-        Translation data = new Translation();
-        ResultSet resultSet = null;
-        try {
-            getByTerm2Idstatement.setInt(1, term2ID);
-            resultSet = getByTerm2Idstatement.executeQuery();
-            if (resultSet.next()) {
-                data = getTranslationFromResultSet(resultSet);
-            }
-        } catch (SQLException ex) {
-            log.error(ex.getMessage(), ex);
-        } finally {
-            endResultSet(resultSet);
-        }
+        Translation data = (Translation) getterFromInt(getByTerm2IdStatement,term2ID).orElseGet(()->new Translation());
         return data;
     }
 
-    private Translation getTranslationFromResultSet(ResultSet resultSet) {
+    @Override
+    protected Translation getFromResultSet(ResultSet resultSet) {
         Translation translation = new Translation();
         TermDao termDao = new TermDaoMySQLImpl();
         try {
@@ -139,7 +95,7 @@ public class TranslationDaoMySQLImpl implements TranslationDao {
                 insertStatement.setInt(i++, translation.getTerm2ID().getId());
                 insertStatement.setInt(i++, translation.getPriority());
 
-                return successfulAction(insertStatement.executeUpdate());
+                return insertStatement.executeUpdate()==1;
             } catch (SQLException ex) {
                 log.error(ex.getMessage(), ex);
                 return false;
@@ -159,7 +115,7 @@ public class TranslationDaoMySQLImpl implements TranslationDao {
                 updateStatement.setInt(i++, translation.getPriority());
                 updateStatement.setInt(i++, translation.getId());
 
-                return successfulAction(updateStatement.executeUpdate());
+                return updateStatement.executeUpdate()==1;
             } catch (SQLException ex) {
                 log.error(ex.getMessage(), ex);
                 return false;
@@ -172,47 +128,14 @@ public class TranslationDaoMySQLImpl implements TranslationDao {
     @Override
     public boolean delete(Translation translation) {
         if (translation!=null) {
-            try {
-                int i = 1;
-                deleteStatement.setInt(i++, translation.getId());
-
-                return successfulAction(deleteStatement.executeUpdate());
-            } catch (SQLException ex) {
-                log.error(ex.getMessage(), ex);
-                return false;
-            }
+            return deleteFromDatabase(deleteStatement,translation.getId());
         } else {
+            log.warn("User tried to delete Translation with null value from data.");
             return false;
         }
     }
 
-    private static void endResultSet(ResultSet resultSet) {
-        try {
-            if (null != resultSet) {
-                resultSet.close();
-            }
-        } catch (SQLException ex) {
-            log.error(ex.getMessage(), ex);
-        }
-    }
-
     public static void endStatements() {
-        endStatemnt(getAllStatement);
-        endStatemnt(getByIdstatement);
-        endStatemnt(getByTerm1Idstatement);
-        endStatemnt(getByTerm1Idstatement);
-        endStatemnt(insertStatement);
-        endStatemnt(updateStatement);
-        endStatemnt(deleteStatement);
-    }
-
-    private static void endStatemnt (Statement statement) {
-        try {
-            if (null != statement) {
-                statement.close();
-            }
-        } catch (SQLException ex) {
-            log.error(ex.getMessage(), ex);
-        }
+        statements.forEach(statement -> endStatement(statement));
     }
 }

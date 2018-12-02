@@ -1,20 +1,19 @@
 package com.gzs.daos.mysql;
 
 import com.gzs.daos.LanguageDao;
-import com.gzs.main.DBConnector;
 import com.gzs.model.Language;
 import lombok.extern.slf4j.Slf4j;
 
-import java.sql.*;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
-public class LanguageDaoMySQLImpl implements LanguageDao {
+public class LanguageDaoMySQLImpl extends DatabaseDao implements LanguageDao {
 
-    private static String tableName;
-    private static DBConnector dbConnector;
-    private static Connection connection;
+    private static List<PreparedStatement> statements;
     private static PreparedStatement getAllStatement;
     private static PreparedStatement getByIdStatement;
     private static PreparedStatement getByEnglishNameStatement;
@@ -25,9 +24,7 @@ public class LanguageDaoMySQLImpl implements LanguageDao {
     private static PreparedStatement deleteStatement;
 
     static {
-        tableName = "languages";
-        dbConnector = DBConnector.getInstance();
-        connection = dbConnector.getConn();
+        String tableName = "languages";
         try {
             getAllStatement = connection.prepareStatement("SELECT * FROM " + tableName);
             getByIdStatement = connection.prepareStatement("SELECT * FROM " + tableName + " WHERE id = ?");
@@ -37,6 +34,15 @@ public class LanguageDaoMySQLImpl implements LanguageDao {
             insertStatement = connection.prepareStatement("INSERT INTO " + tableName + " VALUES (?,?,?,?)");
             updateStatement = connection.prepareStatement("UPDATE " + tableName + " SET EnglishName=?, NativeName=?, IsoCode=? WHERE id=?");
             deleteStatement = connection.prepareStatement("DELETE FROM " + tableName + " WHERE id = ?");
+            statements = new ArrayList<>();
+            statements.add(getAllStatement);
+            statements.add(getByIdStatement);
+            statements.add(getByEnglishNameStatement);
+            statements.add(getByNativeNameStatement);
+            statements.add(getByIsoCodeStatement);
+            statements.add(insertStatement);
+            statements.add(updateStatement);
+            statements.add(deleteStatement);
         } catch (SQLException ex) {
             log.error(ex.getMessage(), ex);
         }
@@ -44,94 +50,35 @@ public class LanguageDaoMySQLImpl implements LanguageDao {
 
     @Override
     public List<Language> getAll() {
-        List<Language> data = new ArrayList<>();
-        ResultSet resultSet = null;
-        try {
-            resultSet = getAllStatement.executeQuery();
-            while (resultSet.next()) {
-                data.add(getLanguageFromResultSet(resultSet));
-            }
-        } catch (SQLException ex) {
-            log.error(ex.getMessage(), ex);
-        } finally {
-            endResultSet(resultSet);
-        }
-        return data;
+        return getAllFromDatabase(getAllStatement);
     }
 
     @Override
     public Language get(int id) {
-        Language data = null;
-        ResultSet resultSet = null;
-        try {
-            getByIdStatement.setInt(1, id);
-            resultSet = getByIdStatement.executeQuery();
-            if (resultSet.next()) {
-                data = getLanguageFromResultSet(resultSet);
-            }
-        } catch (SQLException ex) {
-            log.error(ex.getMessage(), ex);
-        } finally {
-            endResultSet(resultSet);
-        }
+        Language data = (Language) getterFromInt(getByIdStatement,id).orElseGet(()->new Language());
         return data;
     }
 
     @Override
     public Language getByEnglishName(String englishName) {
-        Language data = null;
-        ResultSet resultSet = null;
-        try {
-            getByEnglishNameStatement.setString(1, englishName);
-            resultSet = getByEnglishNameStatement.executeQuery();
-            if (resultSet.next()) {
-                data = getLanguageFromResultSet(resultSet);
-            }
-        } catch (SQLException ex) {
-            log.error(ex.getMessage(), ex);
-        } finally {
-            endResultSet(resultSet);
-        }
+        Language data = (Language) getterFromString(getByEnglishNameStatement,englishName).orElseGet(()->new Language());
         return data;
     }
 
     @Override
     public Language getByNativeName(String nativeName) {
-        Language data = null;
-        ResultSet resultSet = null;
-        try {
-            getByNativeNameStatement.setString(1, nativeName);
-            resultSet = getByNativeNameStatement.executeQuery();
-            if (resultSet.next()) {
-                data = getLanguageFromResultSet(resultSet);
-            }
-        } catch (SQLException ex) {
-            log.error(ex.getMessage(), ex);
-        } finally {
-            endResultSet(resultSet);
-        }
+        Language data = (Language) getterFromString(getByNativeNameStatement,nativeName).orElseGet(()->new Language());
         return data;
     }
 
     @Override
     public Language getByIsoCode(String isoCode) {
-        Language data = null;
-        ResultSet resultSet = null;
-        try {
-            getByIsoCodeStatement.setString(1, isoCode);
-            resultSet = getByIsoCodeStatement.executeQuery();
-            if (resultSet.next()) {
-                data = getLanguageFromResultSet(resultSet);
-            }
-        } catch (SQLException ex) {
-            log.error(ex.getMessage(), ex);
-        } finally {
-            endResultSet(resultSet);
-        }
+        Language data = (Language) getterFromString(getByIsoCodeStatement,isoCode).orElseGet(()->new Language());
         return data;
     }
 
-    private Language getLanguageFromResultSet(ResultSet resultSet) {
+    @Override
+    protected Language getFromResultSet(ResultSet resultSet) {
         Language language = new Language();
         try {
             int id = resultSet.getInt("ID");
@@ -155,7 +102,7 @@ public class LanguageDaoMySQLImpl implements LanguageDao {
                 insertStatement.setString(i++, language.getNativeName());
                 insertStatement.setString(i++, language.getIsoCode());
 
-                return successfulAction(insertStatement.executeUpdate());
+                return insertStatement.executeUpdate()==1;
             } catch (SQLException ex) {
                 log.error(ex.getMessage(), ex);
                 return false;
@@ -175,7 +122,7 @@ public class LanguageDaoMySQLImpl implements LanguageDao {
                 updateStatement.setString(i++, language.getIsoCode());
                 updateStatement.setInt(i++, language.getId());
 
-                return successfulAction(updateStatement.executeUpdate());
+                return updateStatement.executeUpdate()==1;
             } catch (SQLException ex) {
                 log.error(ex.getMessage(), ex);
                 return false;
@@ -188,53 +135,14 @@ public class LanguageDaoMySQLImpl implements LanguageDao {
     @Override
     public boolean delete(Language language) {
         if (language!=null) {
-            try {
-                int i = 1;
-                deleteStatement.setInt(i++, language.getId());
-                return successfulAction(deleteStatement.executeUpdate());
-            } catch (SQLException ex) {
-                log.error(ex.getMessage(), ex);
-                return false;
-            }
+            return deleteFromDatabase(deleteStatement, language.getId());
         } else {
+            log.warn("User tried to delete Language with null value from data.");
             return false;
         }
     }
 
-    public static boolean successfulAction(int action){
-        boolean result = true;
-        if (action==0) result=false;
-        return result;
-    }
-
-    private static void endResultSet(ResultSet resultSet) {
-        try {
-            if (null != resultSet) {
-                resultSet.close();
-            }
-        } catch (SQLException ex) {
-            log.error(ex.getMessage(), ex);
-        }
-    }
-
     public static void endStatements() {
-        endStatemnt(getAllStatement);
-        endStatemnt(getByIdStatement);
-        endStatemnt(getByEnglishNameStatement);
-        endStatemnt(getByNativeNameStatement);
-        endStatemnt(getByIsoCodeStatement);
-        endStatemnt(insertStatement);
-        endStatemnt(updateStatement);
-        endStatemnt(deleteStatement);
-    }
-
-    private static void endStatemnt (Statement statement) {
-        try {
-            if (null != statement) {
-                statement.close();
-            }
-        } catch (SQLException ex) {
-            log.error(ex.getMessage(), ex);
-        }
+        statements.forEach(statement -> endStatement(statement));
     }
 }

@@ -7,6 +7,7 @@ public abstract class  DaoFactory {
     public abstract LanguageDao getLanguageDao();
     public abstract TermDao getTermDao();
     public abstract TranslationDao getTranslationDao();
+    public abstract void closeResources();
 
 
     public static DaoFactory getDAOFactory(String factoryType) {

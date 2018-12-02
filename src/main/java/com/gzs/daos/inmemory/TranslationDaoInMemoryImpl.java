@@ -5,7 +5,6 @@ import com.gzs.data.GenerateTestData;
 import com.gzs.model.Translation;
 
 import java.util.List;
-import java.util.Map;
 
 public class TranslationDaoInMemoryImpl extends InMemoryDao<Translation> implements TranslationDao {
     private static GenerateTestData generatedData;
@@ -31,50 +30,19 @@ public class TranslationDaoInMemoryImpl extends InMemoryDao<Translation> impleme
 
     @Override
     public Translation getByTerm1Id(int term1ID) {
-        Translation translation = new Translation();
-        for (Map.Entry<Integer, Translation> entry : dataMap.entrySet()) {
-            if (term1ID == entry.getValue().getTerm1ID().getId()) {
-                translation = entry.getValue();
-            }
-        }
+        Translation translation = dataMap.values().stream()
+                .filter(entry -> term1ID == entry.getTerm1ID().getId())
+                .findFirst()
+                .orElse(new Translation());
         return translation;
     }
 
     @Override
     public Translation getByTerm2Id(int term2ID) {
-        Translation translation = new Translation();
-        for (Map.Entry<Integer, Translation> entry : dataMap.entrySet()) {
-            if (term2ID == entry.getValue().getTerm2ID().getId()) {
-                translation = entry.getValue();
-            }
-        }
+        Translation translation = dataMap.values().stream()
+                .filter(entry -> term2ID == entry.getTerm2ID().getId())
+                .findFirst()
+                .orElse(new Translation());
         return translation;
-    }
-
-    @Override
-    public boolean insert(Translation translation) {
-        if (translation != null) {
-            return insertT(translation,translation.getId());
-        } else {
-            return false;
-        }
-    }
-
-    @Override
-    public boolean update(Translation translation) {
-        if (translation != null) {
-            return updateT(translation,translation.getId());
-        } else {
-            return false;
-        }
-    }
-
-    @Override
-    public boolean delete(Translation translation) {
-        if (translation != null) {
-            return deleteT(translation.getId());
-        } else {
-            return false;
-        }
     }
 }

@@ -7,14 +7,13 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Language {
-
-    private int id;
+public class Language extends DatabaseEntity {
     private String englishName;
     private String nativeName;
     private String isoCode;
 
-    public Language(String englishName, String nativeName, String isoCode) {
+    public Language(int id, String englishName, String nativeName, String isoCode) {
+        super(id);
         this.englishName = englishName;
         this.nativeName = nativeName;
         this.isoCode = isoCode;

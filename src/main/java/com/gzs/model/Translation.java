@@ -7,13 +7,13 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Translation {
-    private int id;
+public class Translation extends DatabaseEntity{
     private Term term1ID;
     private Term term2ID;
     private int priority;
 
-    public Translation(Term term1ID, Term term2ID, int priority) {
+    public Translation(int id, Term term1ID, Term term2ID, int priority) {
+        super(id);
         this.term1ID = term1ID;
         this.term2ID = term2ID;
         this.priority = priority;
