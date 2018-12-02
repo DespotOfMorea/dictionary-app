@@ -1,5 +1,6 @@
 package com.gzs.daos.mysql;
 
+import com.gzs.daos.LanguageDao;
 import com.gzs.daos.TermDao;
 import com.gzs.main.DBConnector;
 import com.gzs.model.Term;
@@ -112,12 +113,13 @@ public class TermDaoMySQLImpl implements TermDao {
 
     private Term getTermFromResultSet(ResultSet resultSet) {
         Term returnTerm = new Term();
+        LanguageDao languageDao = new LanguageDaoMySQLImpl();
         try {
             int id = resultSet.getInt("ID");
             String term = resultSet.getString("Term");
             String meaning = resultSet.getString("Meaning");
             int languageID = resultSet.getInt("LanguageID");
-            returnTerm = new Term(id, term, meaning, languageID);
+            returnTerm = new Term(id, term, meaning, languageDao.get(languageID));
         } catch (SQLException ex) {
             log.error(ex.getMessage(), ex);
         }

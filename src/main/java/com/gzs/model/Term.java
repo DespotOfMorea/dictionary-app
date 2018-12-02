@@ -1,7 +1,5 @@
 package com.gzs.model;
 
-import com.gzs.daos.LanguageDao;
-import com.gzs.daos.mysql.LanguageDaoMySQLImpl;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -21,11 +19,11 @@ public class Term {
         this.language = language;
     }
 
+
     public Term(int id, String term, String meaning, int languageID) {
-        LanguageDao languageDao = new LanguageDaoMySQLImpl();
         this.id = id;
         this.term = term;
         this.meaning = meaning;
-        this.language = languageDao.get(languageID);
+        //this.languageID = languageID;
     }
 }

@@ -1,6 +1,8 @@
 package com.gzs.main;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 
 public class DBConnector {
 
@@ -11,21 +13,21 @@ public class DBConnector {
     private static String username;
     private static String password;
 
-    private DBConnector(){
+    private DBConnector() {
         connection = null;
         Configuration config = new Configuration ();
-        dbPath = config.getDBPath();
-        dbName = config.getDBName();
-        username = config.getDBUserName();
-        password = config.getDBPassword();
+        dbPath = config.getDbPath();
+        dbName = config.getDbName();
+        username = config.getDbUserName();
+        password = config.getDbPassword();
         try {
-            createConn();
+            connection = DriverManager.getConnection(dbPath + dbName, username, password);
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new NoConnectionException(e);
         }
     }
 
-    public static synchronized DBConnector getInstance(){
+    public static synchronized DBConnector getInstance() {
         if(instance == null){
             synchronized (DBConnector.class) {
                 if(instance == null){
@@ -36,11 +38,6 @@ public class DBConnector {
         return instance;
     }
 
-
-    private void createConn() throws SQLException {
-        connection = DriverManager.getConnection(dbPath + dbName, username, password);
-    }
-
     public Connection getConn(){
         return connection;
     }
@@ -48,7 +45,7 @@ public class DBConnector {
     public void endConn() {
         try {
             if (null != connection) {
-               connection.close();
+                connection.close();
             }
         } catch (SQLException sqlex) {
             sqlex.printStackTrace();

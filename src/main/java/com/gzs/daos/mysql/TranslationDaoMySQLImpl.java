@@ -1,5 +1,6 @@
 package com.gzs.daos.mysql;
 
+import com.gzs.daos.TermDao;
 import com.gzs.daos.TranslationDao;
 import com.gzs.main.DBConnector;
 import com.gzs.model.Translation;
@@ -115,12 +116,13 @@ public class TranslationDaoMySQLImpl implements TranslationDao {
 
     private Translation getTranslationFromResultSet(ResultSet resultSet) {
         Translation translation = new Translation();
+        TermDao termDao = new TermDaoMySQLImpl();
         try {
             int id = resultSet.getInt("ID");
             int term1ID = resultSet.getInt("Term1ID");
             int term2ID = resultSet.getInt("Term2ID");
             int priority = resultSet.getInt("Priority");
-            translation = new Translation(id, term1ID, term2ID, priority);
+            translation = new Translation(id, termDao.get(term1ID), termDao.get(term2ID), priority);
         } catch (SQLException ex) {
             log.error(ex.getMessage(), ex);
         }
