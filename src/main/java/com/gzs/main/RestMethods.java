@@ -7,7 +7,6 @@ import com.gzs.daos.TermDao;
 import com.gzs.daos.TranslationDao;
 import com.gzs.log.CustomInfo;
 import com.gzs.model.Term;
-import com.gzs.model.Translation;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
