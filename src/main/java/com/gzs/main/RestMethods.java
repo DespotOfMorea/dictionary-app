@@ -54,4 +54,13 @@ public class RestMethods {
             return mapper.writeValueAsString(infoMsg);
         }
     }
+
+    public void setTermDao(TermDao termDao) {
+        this.termDao = termDao;
+    }
+
+    public void setTranslationDao(TranslationDao translationDao) {
+        this.translationDao = translationDao;
+    }
+
 }
