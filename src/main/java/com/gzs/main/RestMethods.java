@@ -21,8 +21,14 @@ public class RestMethods {
         mapper = new ObjectMapper();
         Configuration config = new Configuration();
         DaoFactory daoFactory = DaoFactory.getDAOFactory(config.getDataType());
-        termDao = daoFactory.getTermDao();
-        translationDao = daoFactory.getTranslationDao();
+        this.termDao = daoFactory.getTermDao();
+        this.translationDao = daoFactory.getTranslationDao();
+    }
+
+    public RestMethods(TermDao termDao, TranslationDao translationDao) {
+        mapper = new ObjectMapper();
+        this.termDao = termDao;
+        this.translationDao = translationDao;
     }
 
     @GET
