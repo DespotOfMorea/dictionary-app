@@ -23,7 +23,7 @@ public class GenerateTestData {
         this.languages = new HashMap<>();
         this.terms = new HashMap<>();
         this.translations = new HashMap<>();
-//        createTestData();
+        createTestData();
     }
 
     public static synchronized GenerateTestData getInstance() {
@@ -50,24 +50,25 @@ public class GenerateTestData {
     public static void setLanguages(Map<Integer, Language> languages) {
         GenerateTestData.languages = languages;
     }
-
     public static void setTerms(Map<Integer, Term> terms) {
         GenerateTestData.terms = terms;
     }
-
     public static void setTranslations(Map<Integer, Translation> translations) {
         GenerateTestData.translations = translations;
     }
 
     public static void createTestData() {
-        LanguageDao languageDao = new LanguageDaoInMemoryImpl();
-        TermDao termDao = new TermDaoInMemoryImpl();
-        TranslationDao translationDao = new TranslationDaoInMemoryImpl();
+//        LanguageDao languageDao = new LanguageDaoInMemoryImpl();
+//        TermDao termDao = new TermDaoInMemoryImpl();
+//        TranslationDao translationDao = new TranslationDaoInMemoryImpl();
 
         Language english = new Language(1, "english", "english1", "eng");
         Language serbian = new Language(2, "serbian", "srpski", "srp");
-        languageDao.insert(english);
-        languageDao.insert(serbian);
+//        languageDao.insert(english);
+//        languageDao.insert(serbian);
+        languages.put(english.getId(),english);
+        languages.put(serbian.getId(),serbian);
+
 
         Term term1 = new Term(1, "Fault", "A fault is a fracture, or break, in the Earth's crust (lithosphere). Some faults are active. Here, sections of rock move past each other. This sometimes makes earthquakes.", english);
         Term term2 = new Term(2, "Fold", "The term fold is used in geology when one or a stack of originally flat, level surfaces, such as sedimentary strata, are bent or curved as a result of pressure and high temperature. The basic cause is likely to be some aspect of plate tectonics.", english);
@@ -90,6 +91,28 @@ public class GenerateTestData {
 
         Term term18 = new Term(18, "Folder", "...", english);
 
+        terms.put(term1.getId(),term1);
+        terms.put(term2.getId(),term2);
+        terms.put(term3.getId(),term3);
+        terms.put(term4.getId(),term4);
+        terms.put(term5.getId(),term5);
+        terms.put(term6.getId(),term6);
+        terms.put(term7.getId(),term7);
+        terms.put(term8.getId(),term8);
+        terms.put(term9.getId(),term9);
+
+        terms.put(term10.getId(),term10);
+        terms.put(term11.getId(),term11);
+        terms.put(term12.getId(),term12);
+        terms.put(term13.getId(),term13);
+        terms.put(term14.getId(),term14);
+        terms.put(term15.getId(),term15);
+        terms.put(term16.getId(),term16);
+        terms.put(term17.getId(),term17);
+
+        terms.put(term18.getId(),term18);
+
+/*
         termDao.insert(term1);
         termDao.insert(term2);
         termDao.insert(term3);
@@ -129,5 +152,25 @@ public class GenerateTestData {
         translationDao.insert(new Translation(16, term15, term7, 1));
         translationDao.insert(new Translation(17, term16, term8, 1));
         translationDao.insert(new Translation(18, term17, term9, 1));
+*/
+        translations.put(1,new Translation(1, term1, term10, 1));
+        translations.put(2,new Translation(2, term2, term11, 1));
+        translations.put(3,new Translation(3, term3, term12, 1));
+        translations.put(4,new Translation(4, term4, term12, 1));
+        translations.put(5,new Translation(5, term5, term13, 1));
+        translations.put(6,new Translation(6, term6, term14, 1));
+        translations.put(7,new Translation(7, term7, term15, 1));
+        translations.put(8,new Translation(8, term8, term16, 1));
+        translations.put(9,new Translation(9, term9, term17, 1));
+        translations.put(10,new Translation(10, term10, term1, 1));
+        translations.put(11,new Translation(11, term11, term2, 1));
+        translations.put(12,new Translation(12, term12, term3, 1));
+        translations.put(13,new Translation(13, term12, term4, 2));
+        translations.put(14,new Translation(14, term13, term5, 1));
+        translations.put(15,new Translation(15, term14, term6, 1));
+        translations.put(16,new Translation(16, term15, term7, 1));
+        translations.put(17,new Translation(17, term16, term8, 1));
+        translations.put(18,new Translation(18, term17, term9, 1));
+
     }
 }

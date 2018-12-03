@@ -1,12 +1,14 @@
 package com.gzs.daos.inmemory;
 
 import com.gzs.model.DatabaseEntity;
+import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@Setter
 public class InMemoryDao<T extends DatabaseEntity> {
 
     protected Map<Integer, T> dataMap;

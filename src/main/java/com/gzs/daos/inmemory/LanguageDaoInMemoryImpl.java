@@ -1,21 +1,14 @@
 package com.gzs.daos.inmemory;
 
 import com.gzs.daos.LanguageDao;
-import com.gzs.data.GenerateTestData;
 import com.gzs.model.Language;
 
 import java.util.List;
 
 public class LanguageDaoInMemoryImpl extends InMemoryDao<Language> implements LanguageDao {
-    private static GenerateTestData generatedData;
-
-    static {
-        generatedData = GenerateTestData.getInstance();
-    }
 
     public LanguageDaoInMemoryImpl() {
         super();
-        this.dataMap = generatedData.getLanguages();
     }
 
     @Override

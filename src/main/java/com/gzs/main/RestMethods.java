@@ -5,6 +5,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gzs.daos.DaoFactory;
 import com.gzs.daos.TermDao;
 import com.gzs.daos.TranslationDao;
+import com.gzs.daos.inmemory.TermDaoInMemoryImpl;
+import com.gzs.daos.inmemory.TranslationDaoInMemoryImpl;
 import com.gzs.data.GenerateTestData;
 import com.gzs.log.CustomInfo;
 import com.gzs.model.Term;
@@ -26,7 +28,8 @@ public class RestMethods {
         translationDao = daoFactory.getTranslationDao();
         if (config.getDataType().equals(DaoFactory.INMEMORY)) {
             GenerateTestData generatedData = GenerateTestData.getInstance();
-            generatedData.createTestData();
+            ((TermDaoInMemoryImpl) termDao).setDataMap(generatedData.getTerms());
+            ((TranslationDaoInMemoryImpl) translationDao).setDataMap(generatedData.getTranslations());
         }
     }
 

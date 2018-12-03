@@ -1,23 +1,15 @@
 package com.gzs.daos.inmemory;
 
 import com.gzs.daos.TermDao;
-import com.gzs.data.GenerateTestData;
 import com.gzs.model.Term;
 
 import java.util.List;
 
 public class TermDaoInMemoryImpl extends InMemoryDao<Term> implements TermDao {
-    private static GenerateTestData generatedData;
-
-    static {
-        generatedData = GenerateTestData.getInstance();
-    }
 
     public TermDaoInMemoryImpl() {
         super();
-        this.dataMap = generatedData.getTerms();
     }
-
 
     @Override
     public List<Term> getAll() {
