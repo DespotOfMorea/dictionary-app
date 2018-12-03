@@ -26,7 +26,7 @@ public class TermDaoTest {
     }
 
     @DataProvider(name="EqualsAssertionsProviderForID")
-    private Object[][] createConcatenationAssertionSetForID(){
+    private Object[][] createConcatenationAssertionSetForID() {
         return new Object[][]{
                 new Object []{17, terms.get(2)},
                 new Object []{10, terms.get(1)},
@@ -37,7 +37,7 @@ public class TermDaoTest {
     }
 
     @DataProvider(name="EqualsAssertionsProviderForTerm")
-    private Object[][] createConcatenationAssertionSetForTerm(){
+    private Object[][] createConcatenationAssertionSetForTerm() {
         return new Object[][]{
                 new Object []{"Pukotina", terms.get(2)},
                 new Object []{"Fold", terms.get(0)},

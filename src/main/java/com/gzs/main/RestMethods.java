@@ -24,7 +24,7 @@ public class RestMethods {
         DaoFactory daoFactory = DaoFactory.getDAOFactory(config.getDataType());
         termDao = daoFactory.getTermDao();
         translationDao = daoFactory.getTranslationDao();
-        if (config.getDataType().equals(DaoFactory.INMEMORY)){
+        if (config.getDataType().equals(DaoFactory.INMEMORY)) {
             GenerateTestData generatedData = GenerateTestData.getInstance();
             generatedData.createTestData();
         }
@@ -45,7 +45,7 @@ public class RestMethods {
         int termId = termDao.getByTerm(termName).getId();
         if (termId != 0) {
             int translationId = translationDao.getByTerm1Id(termId).getId();
-            if (translationId!=0){
+            if (translationId!=0) {
                 int translatedTermId = translationDao.getByTerm1Id(termId).getTerm2ID().getId();
                 Term term = termDao.get(translatedTermId);
                 ObjectMapper mapper = new ObjectMapper();

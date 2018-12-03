@@ -20,7 +20,7 @@ public class CustomInfo {
         printMessage2Log();
     }
 
-    private void printMessage2Log (){
+    private void printMessage2Log () {
         switch(this.type) {
             case DEBUG: log.debug(this.message);  break;
             case ERROR: log.error(this.message);  break;

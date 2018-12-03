@@ -3,7 +3,7 @@ package com.gzs.daos;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public abstract class  DaoFactory {
+public abstract class DaoFactory {
     public static final String MYSQL = "MySQL";
     public static final String INMEMORY= "InMemory";
 

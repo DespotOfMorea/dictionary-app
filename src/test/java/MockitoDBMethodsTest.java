@@ -11,7 +11,7 @@ import static org.testng.Assert.assertEquals;
 public class MockitoDBMethodsTest extends PowerMockTestCase {
 
     @DataProvider(name="EqualsAssertionsProvider")
-    public Object[][] createConcatenationAssertionSet(){
+    public Object[][] createConcatenationAssertionSet() {
         return new Object[][]{
                 new Object []{"Pukotina", 17},
                 new Object []{"Pukotina", 2},

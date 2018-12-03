@@ -41,7 +41,7 @@ public class TermDaoInMemoryImpl extends InMemoryDao<Term> implements TermDao {
     @Override
     public Term getByTermLang(String term, int langId) {
         Term returnTerm = dataMap.values().stream()
-                .filter(entry -> term.equals(entry.getTerm())&&langId==entry.getLanguage().getId())
+                .filter(entry -> term.equals(entry.getTerm()) && langId == entry.getLanguage().getId())
                 .findFirst()
                 .orElse(new Term());
         return returnTerm;

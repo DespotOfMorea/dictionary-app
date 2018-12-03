@@ -30,7 +30,7 @@ public class TranslationDaoTest {
     }
 
     @DataProvider(name="EqualsAssertionsProviderForID")
-    private Object[][] createConcatenationAssertionSetForID(){
+    private Object[][] createConcatenationAssertionSetForID() {
         return new Object[][]{
                 new Object []{0, new Translation()},
                 new Object []{45, new Translation()},

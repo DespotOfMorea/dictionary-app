@@ -12,7 +12,7 @@ public class InMemoryDao<T extends DatabaseEntity> {
     protected Map<Integer, T> dataMap;
 
     public InMemoryDao() {
-        this.dataMap = new HashMap<Integer, T>();
+        this.dataMap = new HashMap<>();
     }
 
     protected List<T> getAllFromMap() {

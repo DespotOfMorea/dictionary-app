@@ -28,9 +28,9 @@ public class DBConnector {
     }
 
     public static synchronized DBConnector getInstance() {
-        if(instance == null){
+        if (instance == null) {
             synchronized (DBConnector.class) {
-                if(instance == null){
+                if (instance == null) {
                     instance = new DBConnector();
                 }
             }
@@ -38,7 +38,7 @@ public class DBConnector {
         return instance;
     }
 
-    public Connection getConn(){
+    public Connection getConn() {
         return connection;
     }
 
