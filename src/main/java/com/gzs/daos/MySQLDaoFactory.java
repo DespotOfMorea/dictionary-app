@@ -8,9 +8,9 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class MySQLDaoFactory extends DaoFactory {
-    private LanguageDaoMySQLImpl languageDaoMySQL;
-    private TermDaoMySQLImpl termDaoMySQL;
-    private TranslationDaoMySQLImpl translationDaoMySQL;
+    private final LanguageDaoMySQLImpl languageDaoMySQL;
+    private final TermDaoMySQLImpl termDaoMySQL;
+    private final TranslationDaoMySQLImpl translationDaoMySQL;
 
     public MySQLDaoFactory() {
         this.languageDaoMySQL = new LanguageDaoMySQLImpl();

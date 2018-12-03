@@ -5,9 +5,9 @@ import com.gzs.daos.inmemory.TermDaoInMemoryImpl;
 import com.gzs.daos.inmemory.TranslationDaoInMemoryImpl;
 
 public class InMemoryDaoFactory extends DaoFactory {
-    private LanguageDaoInMemoryImpl languageDaoInMemory;
-    private TermDaoInMemoryImpl termDaoInMemory;
-    private TranslationDaoInMemoryImpl translationDaoInMemory;
+    private final LanguageDaoInMemoryImpl languageDaoInMemory;
+    private final TermDaoInMemoryImpl termDaoInMemory;
+    private final TranslationDaoInMemoryImpl translationDaoInMemory;
 
     public InMemoryDaoFactory() {
         this.languageDaoInMemory = new LanguageDaoInMemoryImpl();
