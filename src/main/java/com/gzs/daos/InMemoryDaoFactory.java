@@ -5,23 +5,31 @@ import com.gzs.daos.inmemory.TermDaoInMemoryImpl;
 import com.gzs.daos.inmemory.TranslationDaoInMemoryImpl;
 
 public class InMemoryDaoFactory extends DaoFactory {
+    private LanguageDaoInMemoryImpl languageDaoInMemory;
+    private TermDaoInMemoryImpl termDaoInMemory;
+    private TranslationDaoInMemoryImpl translationDaoInMemory;
+
+    public InMemoryDaoFactory() {
+        this.languageDaoInMemory = new LanguageDaoInMemoryImpl();
+        this.termDaoInMemory = new TermDaoInMemoryImpl();
+        this.translationDaoInMemory = new TranslationDaoInMemoryImpl();
+    }
+
     @Override
     public LanguageDao getLanguageDao() {
-        return new LanguageDaoInMemoryImpl();
+        return languageDaoInMemory;
     }
 
     @Override
     public TermDao getTermDao() {
-        return new TermDaoInMemoryImpl();
+        return termDaoInMemory;
     }
 
     @Override
     public TranslationDao getTranslationDao() {
-        return new TranslationDaoInMemoryImpl();
+        return translationDaoInMemory;
     }
 
     @Override
-    public void closeResources() {
-
-    }
+    public void closeResources() {}
 }

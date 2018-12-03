@@ -8,19 +8,29 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class MySQLDaoFactory extends DaoFactory {
+    private LanguageDaoMySQLImpl languageDaoMySQL;
+    private TermDaoMySQLImpl termDaoMySQL;
+    private TranslationDaoMySQLImpl translationDaoMySQL;
+
+    public MySQLDaoFactory() {
+        this.languageDaoMySQL = new LanguageDaoMySQLImpl();
+        this.termDaoMySQL = new TermDaoMySQLImpl();
+        this.translationDaoMySQL = new TranslationDaoMySQLImpl();
+    }
+
     @Override
     public LanguageDao getLanguageDao() {
-        return new LanguageDaoMySQLImpl();
+        return languageDaoMySQL;
     }
 
     @Override
     public TermDao getTermDao() {
-        return new TermDaoMySQLImpl();
+        return termDaoMySQL;
     }
 
     @Override
     public TranslationDao getTranslationDao() {
-        return new TranslationDaoMySQLImpl();
+        return translationDaoMySQL;
     }
 
     @Override
